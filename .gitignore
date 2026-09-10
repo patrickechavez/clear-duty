@@ -21,3 +21,6 @@ Secrets.xcconfig
 
 # Firebase — each clone supplies its own project config
 GoogleService-Info.plist
+
+# Local design notes
+docs/
