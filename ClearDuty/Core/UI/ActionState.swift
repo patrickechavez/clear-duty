@@ -40,7 +40,7 @@ final class ActionState {
         error = nil
     }
 
-    /// Returns nil when one is already running or it failed — see `error`.
+    /// Returns nil when one is already running or it failed. See `error`.
     @discardableResult
     func run<T>(_ operation: @Sendable () async throws -> T) async -> T? {
         guard !isRunning else { return nil }

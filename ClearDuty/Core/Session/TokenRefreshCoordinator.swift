@@ -47,7 +47,7 @@ actor TokenRefreshCoordinator {
 
             guard let refreshToken = current.refreshToken, !refreshToken.isEmpty else {
 
-                AppLogger.auth.breadcrumb("401 with no refresh token available — ending session.")
+                AppLogger.auth.breadcrumb("401 with no refresh token available, ending session.")
                 throw APIError.unauthorized()
             }
 
@@ -71,7 +71,7 @@ actor TokenRefreshCoordinator {
             }
 
             AppLogger.auth.error(
-                "Token refresh failed: \(error.localizedDescription, privacy: .public) — ending session."
+                "Token refresh failed: \(error.localizedDescription, privacy: .public), ending session."
             )
             await invalidate()
             throw APIError.unauthorized()

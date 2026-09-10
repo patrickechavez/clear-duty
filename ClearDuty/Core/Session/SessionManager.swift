@@ -112,7 +112,7 @@ final class SessionManager {
     /// Called when tokens can't be refreshed; ends the session if it hasn't ended.
     func expire() async {
         guard state == .authenticated else { return }
-        AppLogger.auth.breadcrumb("Session expired — returning to sign-in")
+        AppLogger.auth.breadcrumb("Session expired, returning to sign-in")
         await signOut()
     }
 

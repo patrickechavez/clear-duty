@@ -13,7 +13,7 @@ enum APIConfig {
             preconditionFailure(
                 """
                 API_BASE_URL is missing or invalid in Info.plist.
-                Set it in Config/<Environment>.xcconfig — remember to escape the \
+                Set it in Config/<Environment>.xcconfig. Remember to escape the \
                 double slash as `https:/$()/example.com`.
                 """
             )
@@ -27,7 +27,7 @@ enum APIConfig {
 
     static let isLoggingEnabled: Bool = bool("API_LOGGING_ENABLED")
 
-    /// Unused — the live gate is a 426 from the server, not this flag.
+    /// Unused. The live gate is a 426 from the server, not this flag.
     static let isForceUpdateEnabled: Bool = bool("FORCE_UPDATE_ENABLED")
 
     static let isCertificatePinningEnabled: Bool = bool("CERT_PINNING_ENABLED")
@@ -52,7 +52,7 @@ enum APIConfig {
 
     static let urlScheme: String = string("APP_URL_SCHEME") ?? "clearduty"
 
-    /// Only ever hides the ribbon — Production compiles it out regardless.
+    /// Only ever hides the ribbon; Production compiles it out regardless.
     static let isEnvironmentBannerEnabled: Bool = bool("ENV_BANNER_ENABLED")
 
     private static func string(_ key: String) -> String? {

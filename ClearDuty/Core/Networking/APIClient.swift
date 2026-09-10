@@ -263,7 +263,7 @@ nonisolated final class URLSessionAPIClient: APIClient {
         case let .valueNotFound(expected, context):
             "\(type): null value for non-optional \(expected) at \(path(context))"
         case let .dataCorrupted(context):
-            "\(type): corrupted data at \(path(context)) — \(context.debugDescription)"
+            "\(type): corrupted data at \(path(context)): \(context.debugDescription)"
         @unknown default:
             "\(type): \(error.localizedDescription)"
         }

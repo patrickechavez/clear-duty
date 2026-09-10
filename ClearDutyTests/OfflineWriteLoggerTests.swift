@@ -11,13 +11,13 @@ struct OfflineWriteLoggerTests {
     @Test func marksTheWriteAsNeverSent() {
         let summary = OfflineWriteLogger.summary(.post)
 
-        #expect(summary.hasPrefix("⇢ POST  (offline)"))
+        #expect(summary.hasPrefix("offline POST"))
     }
 
     @Test func includesThePathWhenGiven() {
         let summary = OfflineWriteLogger.summary(.patch, path: "/rest/v1/items")
 
-        #expect(summary.hasPrefix("⇢ PATCH /rest/v1/items  (offline)"))
+        #expect(summary.hasPrefix("offline PATCH /rest/v1/items"))
     }
 
     @Test func stampsTheBuildThatWroteTheRow() {

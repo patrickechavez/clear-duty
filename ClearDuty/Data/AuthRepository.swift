@@ -24,7 +24,7 @@ nonisolated struct LiveAuthRepository: AuthRepository {
     }
 
     func login(username: String, password: String) async throws -> AuthTokens {
-        // Supabase logs in with email — "username" here is really an email.
+        // Supabase logs in with email, so "username" here is really an email.
         let endpoint = Endpoint(
             APIRoute.Auth.login,
             method: .post,
@@ -57,7 +57,7 @@ nonisolated struct LiveAuthRepository: AuthRepository {
         guard let idString = response.resolvedID, let id = UUID(uuidString: idString) else {
             throw APIError.decodingFailed(detail: "Supabase signup response had no valid user id.")
         }
-        // Echo back the username — signup's response may not include it yet.
+        // Echo back the username, since signup's response may not include it yet.
         return RegisterResponse(id: id, username: request.username)
     }
 
@@ -108,7 +108,7 @@ private struct SupabaseSignUpRequest: Encodable {
         let lastName: String
         let username: String
         let dateOfBirth: String
-        // In metadata, not top-level — a top-level "phone" starts phone-based signup.
+        // In metadata, not top-level. A top-level "phone" starts phone-based signup.
         let phone: String?
 
         enum CodingKeys: String, CodingKey {
@@ -121,7 +121,7 @@ private struct SupabaseSignUpRequest: Encodable {
     }
 }
 
-// Signup can return the id flat or nested under "user" — handle both.
+// Signup can return the id flat or nested under "user", so handle both.
 private struct SupabaseSignUpResponse: Decodable {
     let id: String?
     let user: NestedUser?
@@ -133,7 +133,7 @@ private struct SupabaseSignUpResponse: Decodable {
     var resolvedID: String? { id ?? user?.id }
 }
 
-// Shared with LiveTokenRefresher — login and refresh return the same shape.
+// Shared with LiveTokenRefresher; login and refresh return the same shape.
 struct SupabaseAuthResponse: Decodable {
     let accessToken: String
     let refreshToken: String

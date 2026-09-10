@@ -13,7 +13,7 @@ struct RegisterRequest: Encodable, Sendable {
     let username: String
     // ISO-8601 calendar date, e.g. "1998-04-23".
     let dateOfBirth: String
-    // E.164, e.g. "+639171234567". Optional — the field isn't required.
+    // E.164, e.g. "+639171234567". Optional, because the field isn't required.
     let phone: String?
     let password: String
 }

@@ -56,7 +56,7 @@ struct LogFormatTests {
     @Test func summarizesBodiesTooLargeToLog() {
         let large = json(#"{"note":""# + String(repeating: "x", count: 5_000) + #""}"#)
 
-        #expect(LogFormat.body(large) == "<\(large.count) bytes — too large to log>")
+        #expect(LogFormat.body(large) == "<\(large.count) bytes, too large to log>")
     }
 
     @Test func summarizesMultipartBodies() {

@@ -6,8 +6,7 @@
 
 import SwiftUI
 
-// Placeholder shell for the signed-in app. The kiosk flow and the dispatcher
-// board replace this.
+// Placeholder shell until the kiosk and board replace it.
 struct DashboardView: View {
 
     let dependencies: AppDependencies

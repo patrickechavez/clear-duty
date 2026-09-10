@@ -27,7 +27,7 @@ struct PreviewHost<Content: View>: View {
             }
         }
         .task {
-            // Placeholder credentials — swap for a real account on your backend.
+            // Placeholder credentials. Swap for a real account on your backend.
             let login = dependencies.makeLoginViewModel()
             login.email = "preview@example.com"
             login.password = "password"

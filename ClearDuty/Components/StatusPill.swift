@@ -6,8 +6,7 @@
 
 import SwiftUI
 
-// A short state label on a tinted capsule. Used for duty status, sync state and
-// device health, which is most of what the kiosk and the board report.
+// A short state label on a tinted capsule.
 struct StatusPill: View {
 
     enum Tone {

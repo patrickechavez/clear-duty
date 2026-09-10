@@ -13,10 +13,10 @@ import os
 // The only file that imports Firebase. To remove it, see the README.
 enum FirebaseBootstrap {
 
-    // nil when there is no GoogleService-Info.plist — a fresh clone.
+    // nil when there is no GoogleService-Info.plist, as in a fresh clone.
     static func start() -> (analytics: any AnalyticsTracking, crashes: any CrashReporting)? {
         guard Bundle.main.url(forResource: "GoogleService-Info", withExtension: "plist") != nil else {
-            AppLogger.lifecycle.notice("No Firebase plist — analytics and crash reporting are off.")
+            AppLogger.lifecycle.notice("No Firebase plist, so analytics and crash reporting are off.")
             return nil
         }
 

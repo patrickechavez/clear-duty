@@ -14,7 +14,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        // Not in App.init() — reporters aren't installed yet, and debug always attaches.
+        // Not in App.init(); reporters aren't installed yet, and debug always attaches.
         #if !DEBUG
         reportDeviceSecurity()
         #endif
@@ -91,7 +91,7 @@ struct ClearDutyApp: App {
         }
     }
 
-    /// Raised on the way out, lowered on the way back — "not active" would linger.
+    /// Raised on the way out, lowered on the way back. Keying off "not active" would linger.
     private func updateShield(from previous: ScenePhase, to phase: ScenePhase) {
         switch phase {
         case .active:

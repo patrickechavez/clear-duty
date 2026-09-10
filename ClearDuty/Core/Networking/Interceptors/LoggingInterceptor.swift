@@ -27,7 +27,7 @@ struct LoggingInterceptor: RequestInterceptor {
 
         AppLogger.network.debug(
             """
-            → \(method, privacy: .public) \(url, privacy: .public)
+            --> \(method, privacy: .public) \(url, privacy: .public)
               headers:
             \(headers, privacy: .public)\(body, privacy: .public)
             """
@@ -41,10 +41,10 @@ struct LoggingInterceptor: RequestInterceptor {
         let status = response.statusCode
         let url = response.url?.absoluteString ?? endpoint.path
         let body = LogFormat.body(data, contentType: response.value(forHTTPHeaderField: "Content-Type"))
-        let symbol = (200..<300).contains(status) ? "✓" : "✗"
+        let symbol = (200..<300).contains(status) ? "OK" : "ERR"
 
         let message = """
-        ← \(symbol) \(status) \(url)
+        <-- \(symbol) \(status) \(url)
           body: \(body)
         """
 

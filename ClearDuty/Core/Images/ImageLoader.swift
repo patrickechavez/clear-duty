@@ -31,7 +31,7 @@ actor ImageLoader: ImageLoading {
 
     private let session: URLSession
 
-    // Longest edge we decode to — past a full-width phone image is wasted memory.
+    // Longest edge we decode to. Past a full-width phone image is wasted memory.
     private let maxPixelSize: CGFloat
 
     // One download per URL, however many callers ask for it at once.

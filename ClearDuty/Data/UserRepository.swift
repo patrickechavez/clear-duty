@@ -34,7 +34,7 @@ nonisolated struct LiveUserRepository: UserRepository {
         try await api.get(APIRoute.Auth.currentUser)
     }
 
-    // Email is omitted — sending it triggers a change-email confirmation.
+    // Email is omitted because sending it triggers a change-email confirmation.
     func updateProfile(_ user: User) async throws -> User {
         let body = UpdateUserRequest(
             data: UpdateUserRequest.Metadata(
@@ -47,12 +47,12 @@ nonisolated struct LiveUserRepository: UserRepository {
         return try await api.send(endpoint)
     }
 
-    // Supabase Storage uses raw binary, not this multipart flow — needs its own.
+    // Supabase Storage uses raw binary, not this multipart flow, so it needs its own.
     func uploadAvatar(_ image: UIImage, compression: ImageCompression) async throws -> User {
         throw APIError.notSupported(message: "Avatar upload isn't implemented for Supabase yet.")
     }
 
-    // No Supabase-native equivalent — would need a custom devices table.
+    // No Supabase-native equivalent; this would need a custom devices table.
     func registerForPushNotifications(token: String) async throws {
         throw APIError.notSupported(message: "Push registration isn't implemented for Supabase yet.")
     }

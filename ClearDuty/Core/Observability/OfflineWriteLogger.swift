@@ -7,7 +7,7 @@
 import Foundation
 import os
 
-// Logs a write saved locally instead of sent; ⇢ means it never left the device.
+// Logs a write saved locally instead of sent.
 enum OfflineWriteLogger {
 
     static func record(_ method: HTTPMethod, path: String? = nil, body: some Encodable) {
@@ -23,7 +23,7 @@ enum OfflineWriteLogger {
         let endpoint = path.map { " \($0)" } ?? ""
         let client = "\(ClientMetadata.appVersion)(\(ClientMetadata.appBuild)) iOS \(ClientMetadata.osVersion)"
 
-        return "⇢ \(method.rawValue)\(endpoint)  (offline)  client=\(client)"
+        return "offline \(method.rawValue)\(endpoint)  client=\(client)"
     }
 
     private static func emit(_ summary: String, body: String) {

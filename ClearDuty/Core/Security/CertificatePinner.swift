@@ -42,7 +42,7 @@ final class CertificatePinner: NSObject, URLSessionDelegate, @unchecked Sendable
         }
     }
 
-    /// Base64 SHA-256 of the leaf certificate's SPKI — the README shows how to get one.
+    /// Base64 SHA-256 of the leaf certificate's SPKI. The README shows how to get one.
     static func spkiHash(for serverTrust: SecTrust) -> String? {
         guard
             // The chain runs leaf first, and the leaf is what gets pinned.
@@ -70,7 +70,7 @@ final class CertificatePinner: NSObject, URLSessionDelegate, @unchecked Sendable
 
         let algorithmIdentifier: Data
         if keyData.first == 0x04 {
-            // EC — ecPublicKey (1.2.840.10045.2.1) plus the curve OID.
+            // EC: ecPublicKey (1.2.840.10045.2.1) plus the curve OID.
             let ecOID: [UInt8] = [0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02, 0x01]
             let curveOID: [UInt8]
             switch keyData.count {
@@ -83,7 +83,7 @@ final class CertificatePinner: NSObject, URLSessionDelegate, @unchecked Sendable
             }
             algorithmIdentifier = DER.sequence(DER.oid(ecOID) + DER.oid(curveOID))
         } else {
-            // RSA — rsaEncryption (1.2.840.113549.1.1.1)
+            // RSA: rsaEncryption (1.2.840.113549.1.1.1)
             let rsaOID: [UInt8] = [0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01]
             algorithmIdentifier = DER.sequence(DER.oid(rsaOID) + DER.null())
         }

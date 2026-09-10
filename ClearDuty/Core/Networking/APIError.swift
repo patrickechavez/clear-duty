@@ -200,7 +200,7 @@ enum APIError: LocalizedError, Equatable, Sendable {
         }
     }
 
-    /// Errors meaning the app or backend is broken — the only ones worth reporting.
+    /// Errors meaning the app or backend is broken. Only these are worth reporting.
     var isWorthReporting: Bool {
         switch self {
         case .invalidURL, .invalidResponse, .decodingFailed, .serverTrustFailed:

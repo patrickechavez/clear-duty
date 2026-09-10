@@ -42,7 +42,7 @@ enum LogFormat {
         }
 
         guard body.count <= maxBodyBytes else {
-            return "<\(body.count) bytes — too large to log>"
+            return "<\(body.count) bytes, too large to log>"
         }
 
         if let object = try? JSONSerialization.jsonObject(with: body) {

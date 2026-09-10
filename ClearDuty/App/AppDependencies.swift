@@ -43,7 +43,7 @@ final class AppDependencies {
     }
 
     static func live(tokenStore: any TokenStore = KeychainTokenStore()) -> AppDependencies {
-        // No plist, or no Firebase at all — the no-op adapters take over.
+        // No plist, or no Firebase at all, so the no-op adapters take over.
         let (analytics, crashes) = FirebaseBootstrap.start()
             ?? (NoopAnalyticsTracker(), NoopCrashReporter())
 
@@ -55,7 +55,7 @@ final class AppDependencies {
         let metadata = MetadataInterceptor()
         let logging = LoggingInterceptor()
 
-        // nil unless the environment targets Supabase — selects Live* below.
+        // nil unless the environment targets Supabase. Selects Live* below.
         let supabaseAPIKey = APIConfig.supabaseAnonKey.map(SupabaseAPIKeyInterceptor.init(anonKey:))
 
         var refreshInterceptors: [any RequestInterceptor] = [metadata]
@@ -92,7 +92,7 @@ final class AppDependencies {
             crashes: crashes
         )
 
-        // The one place the link is set — everything above already holds it.
+        // The one place the link is set. Everything above already holds it.
         link.session = sessionManager
 
         return AppDependencies(
