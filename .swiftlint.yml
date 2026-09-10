@@ -1,0 +1,19 @@
+# SwiftLint settings. Rule list: https://realm.github.io/SwiftLint/rule-directory.html
+
+disabled_rules:
+  # Flags the normal SwiftUI shape — a view builder trailing closure
+  # alongside another closure argument, e.g. AsyncContentView(retry: {...}) { item in ... }.
+  - multiple_closures_with_trailing_closure
+
+identifier_name:
+  # This list replaces SwiftLint's default, so `id` has to be repeated here —
+  # dropping it would flag every Identifiable type, where the name is required.
+  excluded:
+    - id
+    # Short sizing names read better than spelled-out ones in a design system,
+    # e.g. Theme.Spacing.md instead of Theme.Spacing.medium.
+    - xs
+    - sm
+    - md
+    - lg
+    - xl
