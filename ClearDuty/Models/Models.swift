@@ -101,22 +101,3 @@ struct DeviceRegistration: Encodable, Sendable {
         self.locale = Locale.current.identifier
     }
 }
-
-struct Item: Codable, Identifiable, Equatable, Hashable, Sendable {
-    // Assumes a uuid primary key — change to Int if yours is serial/bigserial.
-    let id: UUID
-    let title: String
-    let description: String
-    let price: Double
-    let thumbnail: String?
-
-    var thumbnailURL: URL? {
-        thumbnail.flatMap(URL.init(string:))
-    }
-}
-
-struct ItemDraft: Encodable, Sendable {
-    let title: String
-    let description: String
-    let price: Double
-}

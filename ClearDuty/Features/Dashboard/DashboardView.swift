@@ -6,32 +6,28 @@
 
 import SwiftUI
 
-// The tab bar. Each tab lives in its own file and keeps its own screen stack.
+// Placeholder shell for the signed-in app. The kiosk flow and the dispatcher
+// board replace this.
 struct DashboardView: View {
 
     let dependencies: AppDependencies
 
-    @Environment(AppNavigator.self) private var navigator
-
     var body: some View {
-        @Bindable var navigator = navigator
-
-        TabView(selection: $navigator.selectedTab) {
-            HomeTab(dependencies: dependencies)
-                .tabItem { Label(AppTab.home.title, systemImage: AppTab.home.systemImage) }
-                .tag(AppTab.home)
-
-            FavoritesTab()
-                .tabItem { Label(AppTab.favorites.title, systemImage: AppTab.favorites.systemImage) }
-                .tag(AppTab.favorites)
-
-            ProfileTab(dependencies: dependencies)
-                .tabItem { Label(AppTab.profile.title, systemImage: AppTab.profile.systemImage) }
-                .tag(AppTab.profile)
-
-            SettingsTab()
-                .tabItem { Label(AppTab.settings.title, systemImage: AppTab.settings.systemImage) }
-                .tag(AppTab.settings)
+        NavigationStack {
+            ContentUnavailableView {
+                Label("Nothing here yet", systemImage: "hammer")
+            } description: {
+                Text("The kiosk and the dispatcher board go here.")
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Task { await dependencies.session.signOut() }
+                    } label: {
+                        Text("Sign Out", comment: "Button that signs the user out")
+                    }
+                }
+            }
         }
     }
 }

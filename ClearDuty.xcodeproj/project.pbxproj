@@ -24,8 +24,8 @@
 
 /* Begin PBXFileReference section */
 		2D137207304C036D002A96B5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2D137208304C036D002A96B5 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		2D1CA87C301A21BA00C6EFD2 /* ClearDuty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClearDuty.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D1E9E803052F34900B10303 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		C0FFEE0000000000000000C1 /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
 		C0FFEE0000000000000000C2 /* Staging.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Staging.xcconfig; sourceTree = "<group>"; };
 		C0FFEE0000000000000000C3 /* Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Production.xcconfig; sourceTree = "<group>"; };
@@ -33,22 +33,9 @@
 		E3BE7B85AF8DF2CB1ABCADB2 /* ClearDutyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClearDutyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2DFCD243302F3B0C006F0921 /* Exceptions for "ClearDuty" folder in "ClearDuty" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Firebase/Development/GoogleService-Info.plist",
-			);
-			target = 2D1CA87B301A21BA00C6EFD2 /* ClearDuty */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2D1CA87E301A21BA00C6EFD2 /* ClearDuty */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				2DFCD243302F3B0C006F0921 /* Exceptions for "ClearDuty" folder in "ClearDuty" target */,
-			);
 			path = ClearDuty;
 			sourceTree = "<group>";
 		};
@@ -102,8 +89,8 @@
 		C0FFEE0000000000000000C0 /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				2D1E9E803052F34900B10303 /* Secrets.xcconfig */,
 				2D137207304C036D002A96B5 /* Info.plist */,
-				2D137208304C036D002A96B5 /* Secrets.xcconfig */,
 				C0FFEE0000000000000000C4 /* Shared.xcconfig */,
 				C0FFEE0000000000000000C1 /* Development.xcconfig */,
 				C0FFEE0000000000000000C2 /* Staging.xcconfig */,
