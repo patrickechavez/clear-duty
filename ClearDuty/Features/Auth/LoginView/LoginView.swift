@@ -9,8 +9,6 @@ import SwiftUI
 struct LoginView: View {
 
     @State private var viewModel: LoginViewModel
-    @Environment(Router<AuthRoute>.self) private var router
-
     @FocusState private var focusedField: Field?
 
     private enum Field: Hashable {
@@ -51,24 +49,6 @@ struct LoginView: View {
                     action: { await viewModel.signIn() }
                 )
                 .disabled(!viewModel.canSubmit)
-
-                HStack {
-                    Button {
-                        router.push(.register)
-                    } label: {
-                        Text("Create an account", comment: "Link to the registration screen")
-                    }
-
-                    Spacer()
-
-                    Button {
-                        router.push(.forgotPassword)
-                    } label: {
-                        Text("Forgot password?", comment: "Link to the password reset screen")
-                    }
-                }
-                .font(Theme.Font.secondary)
-                .padding(.top, Theme.Spacing.xs)
             }
             .padding(Theme.Spacing.lg)
         }
@@ -89,7 +69,6 @@ struct LoginView: View {
         NavigationStack {
             LoginView(viewModel: dependencies.makeLoginViewModel())
         }
-        .environment(Router<AuthRoute>())
     }
 }
 

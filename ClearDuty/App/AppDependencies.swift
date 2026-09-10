@@ -132,18 +132,6 @@ final class AppDependencies {
         LoginViewModel(auth: auth, session: session, analytics: analytics)
     }
 
-    func makeRegisterViewModel() -> RegisterViewModel {
-        RegisterViewModel(auth: auth)
-    }
-
-    func makeForgotPasswordViewModel() -> ForgotPasswordViewModel {
-        ForgotPasswordViewModel(auth: auth)
-    }
-
-    func makeResetPasswordViewModel(token: String) -> ResetPasswordViewModel {
-        ResetPasswordViewModel(token: token, auth: auth)
-    }
-
     func makeHomeViewModel() -> HomeViewModel {
         HomeViewModel(repository: items)
     }
