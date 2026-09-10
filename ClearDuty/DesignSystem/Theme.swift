@@ -41,6 +41,9 @@ enum Theme {
         static let thumbnail: CGFloat = 56
 
         static let minimumTapTarget: CGFloat = 44
+
+        // A mounted iPad is tapped at arm's length, so 44 is too small there.
+        static let kioskTapTarget: CGFloat = 88
     }
 
     enum Color {
@@ -65,6 +68,9 @@ enum Theme {
     }
 
     enum Font {
+        // For the one number a kiosk screen exists to show.
+        static let display = SwiftUI.Font.system(size: 72, weight: .medium, design: .rounded)
+
         static let screenTitle = SwiftUI.Font.largeTitle.weight(.bold)
         static let sectionTitle = SwiftUI.Font.title3.weight(.semibold)
         static let cardTitle = SwiftUI.Font.headline
