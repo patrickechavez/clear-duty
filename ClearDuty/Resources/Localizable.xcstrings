@@ -47,20 +47,11 @@
         }
       }
     },
-    "Back" : {
-      "comment" : "Button that returns to the previous screen"
-    },
     "Back Soon" : {
 
     },
-    "Back to Root" : {
-      "comment" : "Button that returns to the first screen of the tab"
-    },
-    "Blocked Users" : {
-      "comment" : "Button that opens the blocked users screen\nTitle of the blocked users screen"
-    },
     "Cancel" : {
-      "comment" : "Button that dismisses the favorite sheet without saving\nDismisses the date picker without choosing\nDismisses the picker without choosing"
+      "comment" : "Dismisses the date picker without choosing\nDismisses the picker without choosing"
     },
     "Cancelled." : {
       "comment" : "A request was cancelled",
@@ -73,9 +64,6 @@
           }
         }
       }
-    },
-    "Change Password" : {
-      "comment" : "Button that opens the change password screen\nTitle of the change password screen"
     },
     "Change Photo" : {
       "comment" : "Button that opens the photo picker",
@@ -137,9 +125,6 @@
         }
       }
     },
-    "Close" : {
-      "comment" : "Button that dismisses the favorite full-screen cover"
-    },
     "Confirm password" : {
       "comment" : "Label for the password confirmation field",
       "extractionState" : "manual",
@@ -157,9 +142,6 @@
     },
     "Country calling code" : {
       "comment" : "Accessibility label for the country code picker"
-    },
-    "Covers the whole screen" : {
-      "comment" : "Body of the favorite full-screen cover"
     },
     "Create Account" : {
       "comment" : "Primary button on the registration screen",
@@ -197,14 +179,8 @@
         }
       }
     },
-    "Date of birth" : {
-      "comment" : "Label for the date of birth field"
-    },
     "Done" : {
       "comment" : "Confirms the chosen date"
-    },
-    "Edit Note" : {
-      "comment" : "Title of the favorite sheet screen"
     },
     "Edit Profile" : {
       "comment" : "Title of the placeholder edit-profile screen",
@@ -217,9 +193,6 @@
           }
         }
       }
-    },
-    "Edit the note in a sheet" : {
-      "comment" : "Row that presents the favorite sheet"
     },
     "Email" : {
       "comment" : "Label for the email field",
@@ -257,12 +230,6 @@
         }
       }
     },
-    "Favorite" : {
-      "comment" : "Title of the favorite detail screen"
-    },
-    "Favorites" : {
-      "comment" : "Favorites tab title\nTitle of the favorites screen"
-    },
     "First name" : {
       "comment" : "Placeholder for the first name field",
       "extractionState" : "manual",
@@ -286,9 +253,6 @@
           }
         }
       }
-    },
-    "Full-Screen Cover" : {
-      "comment" : "Title of the favorite full-screen cover"
     },
     "Hide password" : {
       "comment" : "Accessibility label for the password reveal toggle",
@@ -314,9 +278,6 @@
         }
       }
     },
-    "Item unavailable" : {
-
-    },
     "Items" : {
       "comment" : "Home tab title",
       "extractionState" : "manual",
@@ -328,9 +289,6 @@
           }
         }
       }
-    },
-    "Items you add will appear here." : {
-
     },
     "Last name" : {
       "comment" : "Placeholder for the last name field",
@@ -392,32 +350,17 @@
         }
       }
     },
-    "Next" : {
-      "comment" : "Button that opens the next screen"
-    },
     "No access" : {
 
     },
     "No internet connection" : {
       "comment" : "Banner shown while the device is offline"
     },
-    "No items yet" : {
-
-    },
-    "No matches" : {
-
-    },
     "Not found" : {
 
     },
-    "Note" : {
-      "comment" : "Label for the note field on the favorite sheet"
-    },
-    "Notes" : {
-      "comment" : "Title of the favorite notes screen"
-    },
-    "Notifications" : {
-      "comment" : "Row that opens the notification settings screen\nTitle of the notification settings screen"
+    "Nothing here yet" : {
+
     },
     "OK" : {
       "comment" : "Alert dismiss button",
@@ -431,12 +374,6 @@
         }
       }
     },
-    "Open a favorite" : {
-      "comment" : "Row that opens the favorite detail screen"
-    },
-    "Open a full-screen cover" : {
-      "comment" : "Row that presents the favorite full-screen cover"
-    },
     "Password" : {
       "comment" : "Label for the password field",
       "extractionState" : "manual",
@@ -448,9 +385,6 @@
           }
         }
       }
-    },
-    "Password changed" : {
-      "comment" : "Title shown after a password has been reset"
     },
     "Passwords don't match." : {
       "comment" : "Validation message when passwords differ",
@@ -506,9 +440,6 @@
     "Profile photo for %@" : {
 
     },
-    "Profile unavailable" : {
-
-    },
     "Reset Password" : {
       "comment" : "Title of the forgot-password screen",
       "extractionState" : "manual",
@@ -520,15 +451,6 @@
           }
         }
       }
-    },
-    "Reviews" : {
-      "comment" : "Button that opens the item reviews screen\nTitle of the item reviews screen"
-    },
-    "Reviews for item %@" : {
-      "comment" : "Placeholder line on the item reviews screen"
-    },
-    "Save" : {
-      "comment" : "Button that saves the note and dismisses the favorite sheet"
     },
     "Search" : {
       "comment" : "Placeholder for a search field",
@@ -698,6 +620,9 @@
     "That took too long" : {
 
     },
+    "The kiosk and the dispatcher board go here." : {
+
+    },
     "The request took too long. Please try again." : {
       "comment" : "Error shown when a network request times out",
       "extractionState" : "manual",
@@ -761,9 +686,6 @@
         }
       }
     },
-    "Try a different search term." : {
-
-    },
     "Try Again" : {
       "comment" : "Button that retries a failed network request",
       "extractionState" : "manual",
@@ -793,9 +715,6 @@
     },
     "Update Required" : {
 
-    },
-    "Use at least %lld characters." : {
-      "comment" : "Validation message shown when a password is too short"
     },
     "User ID" : {
       "comment" : "Label for the user ID row on the profile screen",
@@ -922,9 +841,6 @@
     },
     "You're offline" : {
 
-    },
-    "Your password has been changed. You can now sign in with it." : {
-      "comment" : "Confirmation shown after a password has been reset"
     },
     "Your session has expired. Please sign in again." : {
       "comment" : "Error shown when the session is no longer valid",

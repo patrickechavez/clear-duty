@@ -63,8 +63,7 @@ struct PickerField<Item: Hashable>: View {
     }
 }
 
-// Also used by PhoneField for its country picker.
-struct SelectionSheet<Item: Hashable>: View {
+private struct SelectionSheet<Item: Hashable>: View {
 
     let title: String
     let items: [Item]
