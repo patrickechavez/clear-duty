@@ -10,10 +10,10 @@ xcuserdata/
 # macOS
 .DS_Store
 
-# Swift Package Manager
+# Swift Package Manager. Package.resolved is committed on purpose — it pins
+# exact dependency versions so a fresh clone builds what you built.
 .build/
 .swiftpm/
-Package.resolved
 
 # Secrets / local config (keep real keys out of git)
 Secrets.xcconfig
