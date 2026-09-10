@@ -12,14 +12,6 @@ import os
 @MainActor
 final class AppNavigator {
 
-    var selectedTab: AppTab = .home
-
-    let home = Router<HomeRoute>()
-    let favorites = Router<FavoritesRoute>()
-    let profile = Router<ProfileRoute>()
-    let settings = Router<SettingsRoute>()
-    let auth = Router<AuthRoute>()
-
     private(set) var pendingLink: DeepLink?
 
     @ObservationIgnored private let parser: DeepLinkParser
@@ -68,37 +60,12 @@ final class AppNavigator {
     }
 
     func reset() {
-        selectedTab = .home
-        home.popToRoot()
-        favorites.popToRoot()
-        profile.popToRoot()
-        settings.popToRoot()
-        auth.popToRoot()
         pendingLink = nil
     }
 
+    // ClearDuty has no routed screens yet, so a link only has to survive the
+    // sign-in gate until there is somewhere to send it.
     private func apply(_ link: DeepLink) {
-        switch link {
-        case .home:
-            selectedTab = .home
-            home.popToRoot()
-
-        case let .item(id):
-            selectedTab = .home
-
-            home.set([.itemDetail(id: id)])
-
-        case .profile:
-            selectedTab = .profile
-            profile.popToRoot()
-
-        case .settings:
-            selectedTab = .settings
-            settings.popToRoot()
-
-        case let .resetPassword(token):
-
-            auth.set([.resetPassword(token: token)])
-        }
+        AppLogger.navigation.breadcrumb("Deep link has no destination yet: \(link.path)")
     }
 }

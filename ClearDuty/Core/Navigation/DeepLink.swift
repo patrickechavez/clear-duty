@@ -9,25 +9,12 @@ import os
 
 enum DeepLink: Equatable, Sendable {
     case home
-    case item(id: UUID)
-    case profile
-    case settings
-    case resetPassword(token: String)
 
-    var isPublic: Bool {
-        switch self {
-        case .resetPassword: true
-        case .home, .item, .profile, .settings: false
-        }
-    }
+    var isPublic: Bool { false }
 
     var path: String {
         switch self {
         case .home: "/home"
-        case let .item(id): "/items/\(id.uuidString)"
-        case .profile: "/profile"
-        case .settings: "/settings"
-        case .resetPassword: "/reset-password"
         }
     }
 }
@@ -73,32 +60,9 @@ struct DeepLinkParser: Sendable {
     }
 
     private func route(for segments: [String], query: [URLQueryItem]) -> DeepLink? {
-        func value(_ name: String) -> String? {
-            query.first { $0.name == name }?.value
-        }
-
         switch segments.first?.lowercased() {
         case nil, "home", "":
             return .home
-
-        case "items", "item":
-
-            guard segments.count > 1 else { return .home }
-            guard let id = UUID(uuidString: segments[1]) else { return nil }
-            return .item(id: id)
-
-        case "profile", "me", "account":
-            return .profile
-
-        case "settings":
-            return .settings
-
-        case "reset-password", "reset":
-
-            guard let token = segments.dropFirst().first ?? value("token"), !token.isEmpty else {
-                return nil
-            }
-            return .resetPassword(token: token)
 
         default:
             let path = segments.joined(separator: "/")
