@@ -24,7 +24,7 @@ APP_URL_SCHEME = clearduty-dev
 // API
 
 // "//" is a comment here, so escape the double slash as /$()/
-API_BASE_URL = https:/$()/hqentpdwutdevlxxrths.supabase.co
+API_BASE_URL = https:/$()/nmvppsbetwwkgypdcfpp.supabase.co
 
 SUPABASE_ANON_KEY = $(DEV_SUPABASE_ANON_KEY)
 
