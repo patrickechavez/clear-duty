@@ -21,6 +21,9 @@ final class AppDependencies {
     private let imageLoader: any ImageLoading
     private let tokenStore: any TokenStore
 
+    // One capture session for the app, built the first time the kiosk asks.
+    private lazy var camera = KioskCamera()
+
     init(
         session: SessionManager,
         auth: any AuthRepository,
@@ -137,7 +140,9 @@ final class AppDependencies {
         KioskViewModel(
             terminalName: "Cubao terminal",
             analyzer: SimulatedBreathAnalyzer(),
-            employees: employees
+            employees: employees,
+            photos: camera,
+            camera: camera
         )
     }
 

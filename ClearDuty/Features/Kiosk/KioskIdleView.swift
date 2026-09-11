@@ -11,8 +11,6 @@ struct KioskIdleView: View {
 
     let viewModel: KioskViewModel
 
-    let onRead: (String) -> Void
-
     let onSignOut: () -> Void
 
     var body: some View {
@@ -41,7 +39,7 @@ struct KioskIdleView: View {
     // Preview sits at the top, next to the camera.
     private var scanning: some View {
         VStack(spacing: Theme.Spacing.xxl) {
-            CardScannerView(isRunning: true, onRead: onRead)
+            CameraPreview(camera: viewModel.camera)
                 .frame(width: 320, height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.md))
                 .overlay {
@@ -140,13 +138,12 @@ private func previewViewModel(
 }
 
 #Preview("Scanning") {
-    KioskIdleView(viewModel: previewViewModel(), onRead: { _ in }, onSignOut: {})
+    KioskIdleView(viewModel: previewViewModel(), onSignOut: {})
 }
 
 #Preview("Analyser offline") {
     KioskIdleView(
         viewModel: previewViewModel(analyzer: SimulatedBreathAnalyzer(isConnected: false)),
-        onRead: { _ in },
         onSignOut: {}
     )
 }

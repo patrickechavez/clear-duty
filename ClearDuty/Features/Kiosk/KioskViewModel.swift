@@ -27,8 +27,11 @@ final class KioskViewModel {
         case idle
         case looking
         case confirming(Employee)
+        // Waiting for the driver to step in front of the camera.
+        case awaitingPresence(Employee)
         case rejected(CardRejection)
-        case blowing(Employee)
+        case blowing(Employee, BlowStage)
+        case cancelled(Employee)
         case result(Outcome)
     }
 
@@ -38,13 +41,22 @@ final class KioskViewModel {
         let reading: Double?
         let threshold: Double
         let verdict: Verdict
+        // True when the driver left the camera during the blow.
+        var presenceLost = false
+        // The still taken while the driver was blowing, if one was caught.
+        var photo: Data?
     }
 
     enum Verdict: Equatable {
         case cleared
         case blocked
-        // The blow did not produce a usable sample, so nothing was decided.
-        case invalid
+        // No usable sample, so nothing was decided. Recorded, not discarded.
+        case invalid(InvalidReason)
+    }
+
+    enum InvalidReason: Equatable {
+        case analyzerFailed
+        case driverLeft
     }
 
     // Why a scanned card did not reach the confirm screen.
@@ -80,18 +92,41 @@ final class KioskViewModel {
 
     private(set) var unsyncedCount = 0
 
+    // Held until persistence exists to write it.
+    private(set) var lastCancellation: Outcome?
+
     @ObservationIgnored let analyzer: any BreathAnalyzer
 
     @ObservationIgnored private let employees: any EmployeeRepository
 
+    @ObservationIgnored private let presenceDetector: any PresenceDetector
+
+    @ObservationIgnored private let photos: any PhotoCapture
+
+    @ObservationIgnored private let presence = PresenceMonitor()
+
+    // How long a confirmed driver has to step in front of the camera.
+    @ObservationIgnored private let presenceTimeout: Duration
+
+    // The session the kiosk screens preview. Absent in tests and previews.
+    @ObservationIgnored let camera: KioskCamera?
+
     init(
         terminalName: String,
         analyzer: any BreathAnalyzer,
-        employees: any EmployeeRepository
+        employees: any EmployeeRepository,
+        presenceDetector: any PresenceDetector = SimulatedPresenceDetector(),
+        photos: any PhotoCapture = SimulatedPhotoCapture(),
+        presenceTimeout: Duration = .seconds(20),
+        camera: KioskCamera? = nil
     ) {
         self.terminalName = terminalName
         self.analyzer = analyzer
         self.employees = employees
+        self.presenceDetector = presenceDetector
+        self.photos = photos
+        self.presenceTimeout = presenceTimeout
+        self.camera = camera
     }
 
     // Resolves a scanned code to a driver, or to why it was refused.
@@ -112,37 +147,112 @@ final class KioskViewModel {
         phase = .idle
     }
 
-    // The supervisor confirmed the face matches, so take the reading.
+    // The supervisor confirmed the face matches, so take the reading once the
+    // driver is actually in front of the camera.
     func identityConfirmed() async {
         guard case let .confirming(driver) = phase else { return }
-        phase = .blowing(driver)
+        presence.reset()
+        phase = .awaitingPresence(driver)
+
+        let watching = Task { await watchPresence() }
+        defer { watching.cancel() }
+
+        // Does not start until someone is in frame, so the photo has a subject.
+        guard await presence.waitForArrival(within: presenceTimeout) else {
+            cancel(for: driver, photo: nil)
+            return
+        }
+        await takeReading(for: driver)
+    }
+
+    // Feeds the monitor for as long as the attempt lasts.
+    private func watchPresence() async {
+        for await reading in presenceDetector.presence() {
+            presence.update(reading)
+        }
+        presence.detectorFinished()
+    }
+
+    private func takeReading(for driver: Employee) async {
+        phase = .blowing(driver, .warmingUp(secondsRemaining: 0))
+        var photo: Task<Data?, Never>?
 
         do {
-            let reading = try await analyzer.measure()
-            phase = .result(Outcome(
-                driver: driver,
-                reading: reading,
-                threshold: Self.threshold,
-                verdict: reading <= Self.threshold ? .cleared : .blocked
-            ))
+            for try await stage in analyzer.measure() {
+                // Once the sample is captured, walking away cannot invalidate it.
+                if stage != .analysing, presence.wasLost {
+                    cancel(for: driver, photo: await taken(photo))
+                    return
+                }
+
+                // Taken mid-blow, when the driver is holding the analyser.
+                if stage == .blowing, photo == nil {
+                    photo = Task { try? await photos.capturePhoto() }
+                }
+
+                if case let .complete(reading) = stage {
+                    phase = .result(outcome(for: driver, reading: reading, photo: await taken(photo)))
+                } else {
+                    phase = .blowing(driver, stage)
+                }
+            }
         } catch {
-            phase = .result(Outcome(
+            phase = .result(outcome(
+                for: driver,
+                reading: nil,
+                reason: .analyzerFailed,
+                photo: await taken(photo)
+            ))
+        }
+    }
+
+    private func taken(_ photo: Task<Data?, Never>?) async -> Data? {
+        guard let photo else { return nil }
+        return await photo.value
+    }
+
+    // Saved rather than discarded, so repeated abandonment leaves a trail.
+    private func cancel(for driver: Employee, photo: Data?) {
+        lastCancellation = outcome(for: driver, reading: nil, reason: .driverLeft, photo: photo)
+        phase = .cancelled(driver)
+    }
+
+    // The supervisor sends the driver back to try again.
+    func retryAfterCancellation() {
+        guard case let .cancelled(driver) = phase else { return }
+        presence.reset()
+        phase = .confirming(driver)
+    }
+
+    private func outcome(
+        for driver: Employee,
+        reading: Double?,
+        reason: InvalidReason = .analyzerFailed,
+        photo: Data? = nil
+    ) -> Outcome {
+        guard let reading else {
+            return Outcome(
                 driver: driver,
                 reading: nil,
                 threshold: Self.threshold,
-                verdict: .invalid
-            ))
+                verdict: .invalid(reason),
+                presenceLost: presence.wasLost,
+                photo: photo
+            )
         }
+        return Outcome(
+            driver: driver,
+            reading: reading,
+            threshold: Self.threshold,
+            verdict: reading <= Self.threshold ? .cleared : .blocked,
+            presenceLost: presence.wasLost,
+            photo: photo
+        )
     }
 
     func state(at date: Date = .now) -> State {
         if !analyzer.isConnected { return .fault(.analyzerDisconnected) }
         if !analyzer.isCalibrated(on: date) { return .fault(.calibrationExpired) }
         return .scanning
-    }
-
-    // The camera only looks while the kiosk is idle and healthy.
-    func isCameraRunning(at date: Date = .now) -> Bool {
-        phase == .idle && state(at: date) == .scanning
     }
 }

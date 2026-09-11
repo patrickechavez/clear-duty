@@ -82,11 +82,14 @@
     "Analyser not connected" : {
       "comment" : "Kiosk message when the breath analyser is unreachable"
     },
+    "Analysing" : {
+      "comment" : "Shown while the analyser works out the reading"
+    },
     "Back Soon" : {
 
     },
-    "Blow steadily" : {
-      "comment" : "Kiosk instruction while the analyser reads"
+    "Blow now" : {
+      "comment" : "Tells the driver to start blowing"
     },
     "Board coming soon" : {
 
@@ -226,6 +229,9 @@
         }
       }
     },
+    "Do not blow yet" : {
+      "comment" : "Warns the driver not to blow during warm-up"
+    },
     "Done" : {
       "comment" : "Confirms the chosen date"
     },
@@ -343,8 +349,11 @@
         }
       }
     },
+    "Keep blowing" : {
+      "comment" : "Tells the driver to keep going"
+    },
     "Keep going until the tone stops" : {
-      "comment" : "How long to keep blowing into the analyser"
+      "comment" : "How long to keep blowing"
     },
     "Last name" : {
       "comment" : "Placeholder for the last name field",
@@ -466,6 +475,9 @@
     "Phone" : {
       "comment" : "Label for the phone number field"
     },
+    "Photo being taken" : {
+      "comment" : "Shown while the kiosk captures a photo during the blow"
+    },
     "Please check the highlighted fields." : {
       "comment" : "Error shown when form validation fails server-side",
       "extractionState" : "manual",
@@ -504,9 +516,6 @@
     },
     "Profile photo for %@" : {
 
-    },
-    "Recording" : {
-      "comment" : "Shown while the kiosk captures a photo during the blow"
     },
     "Reset Password" : {
       "comment" : "Title of the forgot-password screen",
@@ -673,11 +682,23 @@
         }
       }
     },
+    "Stay in front of the camera and try again." : {
+      "comment" : "What a driver should do after leaving the camera"
+    },
+    "Steady breath" : {
+      "comment" : "How to blow into the analyser"
+    },
+    "Step in front of the camera" : {
+      "comment" : "Asks the driver to move into shot before the test starts"
+    },
     "Temporarily unavailable" : {
 
     },
     "Test not completed" : {
       "comment" : "Shown when the analyser produced no usable reading"
+    },
+    "Test stopped" : {
+      "comment" : "Shown when the driver left the camera during the test"
     },
     "Testing cannot start. Tell your supervisor." : {
       "comment" : "What to do when the terminal cannot accept tests"
@@ -763,6 +784,9 @@
         }
       }
     },
+    "Try again" : {
+      "comment" : "Restarts a cancelled test"
+    },
     "Try Again" : {
       "comment" : "Button that retries a failed network request",
       "extractionState" : "manual",
@@ -822,6 +846,9 @@
     },
     "Valid for this shift" : {
       "comment" : "How long a passed test lasts"
+    },
+    "Warming up" : {
+      "comment" : "Shown while the analyser prepares"
     },
     "We couldn't establish a secure connection. Please try again." : {
       "comment" : "Error shown when the server's certificate fails trust validation"
@@ -900,6 +927,9 @@
           }
         }
       }
+    },
+    "You can stop now" : {
+      "comment" : "Tells the driver the blow has ended"
     },
     "You don't have permission to do that." : {
       "comment" : "Error shown when the user lacks permission",

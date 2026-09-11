@@ -30,17 +30,25 @@ struct KioskView: View {
             .background(Theme.Color.background)
             .animation(Theme.Animation.standard, value: viewModel.phase)
             .persistentSystemOverlays(.hidden)
+            .task { await readCards() }
+            .onDisappear { viewModel.camera?.stop() }
+    }
+
+    // The camera runs for as long as the kiosk is on screen.
+    private func readCards() async {
+        guard let camera = viewModel.camera else { return }
+        camera.start()
+
+        for await code in camera.codes() {
+            await viewModel.cardWasRead(code)
+        }
     }
 
     @ViewBuilder
     private var content: some View {
         switch viewModel.phase {
         case .idle:
-            KioskIdleView(
-                viewModel: viewModel,
-                onRead: { code in Task { await viewModel.cardWasRead(code) } },
-                onSignOut: onSignOut
-            )
+            KioskIdleView(viewModel: viewModel, onSignOut: onSignOut)
 
         case .looking:
             ProgressView()
@@ -53,8 +61,14 @@ struct KioskView: View {
                 onReject: viewModel.returnToIdle
             )
 
-        case let .blowing(driver):
-            KioskBlowView(driver: driver)
+        case let .awaitingPresence(driver):
+            KioskPresenceView(driver: driver)
+
+        case let .blowing(driver, stage):
+            KioskBlowView(driver: driver, stage: stage)
+
+        case let .cancelled(driver):
+            KioskCancelledView(driver: driver, onRetry: viewModel.retryAfterCancellation)
 
         case let .result(outcome):
             KioskResultView(outcome: outcome)
