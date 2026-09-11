@@ -4,6 +4,32 @@ A production-ready SwiftUI app template. MVVM + Repository, Swift 6 strict concu
 
 - iOS 17+ · Swift 6 · Xcode 26
 
+## Try it
+
+No account, no server, no device.
+
+1. Clone and open `ClearDuty.xcodeproj`
+2. Pick the **Demo** scheme
+3. Run on any iPad simulator
+4. Tap **Continue as demo supervisor**, any credentials also work
+
+The demo runs on mock data alone: no network, no Supabase, no keychain, no
+Firebase. The simulator has no camera, so the idle screen offers four cards
+instead of the reader, one per outcome:
+
+| Card | What happens |
+| --- | --- |
+| Active driver | Confirm screen, then the blow, then a verdict |
+| Suspended driver | Refused with "Not cleared to test" |
+| Staff card | Refused the same way, on purpose |
+| Unknown card | "Card not recognised" |
+
+Three things the demo cannot show, because a simulator has none of them:
+reading a real QR code, face presence gating the blow, and the mid-blow photo.
+Those run on the iPad.
+
+Everything demo-only is compiled out of Staging and Production.
+
 ## Getting started
 
 Clone, rename, and you have a running app in under ten minutes.
