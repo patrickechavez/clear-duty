@@ -13,6 +13,8 @@ struct KioskIdleView: View {
 
     let onSignOut: () -> Void
 
+    @State private var isShowingTerminal = false
+
     var body: some View {
         TimelineView(.everyMinute) { context in
             let state = viewModel.state(at: context.date)
@@ -22,6 +24,13 @@ struct KioskIdleView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                 footer
+            }
+            .sheet(isPresented: $isShowingTerminal) {
+                TerminalSheet(
+                    link: viewModel.link,
+                    terminalName: viewModel.terminalName,
+                    onSignOut: onSignOut
+                )
             }
         }
     }
@@ -134,12 +143,25 @@ struct KioskIdleView: View {
                  comment: "What to do when the terminal cannot accept tests")
                 .font(Theme.Font.secondary)
                 .foregroundStyle(Theme.Color.secondaryText)
+
+            Button {
+                isShowingTerminal = true
+            } label: {
+                Text("Set up the analyser", comment: "Opens the analyser settings from the fault screen")
+                    .frame(maxWidth: 360, minHeight: Theme.Size.kioskTapTarget)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .font(Theme.Font.sectionTitle)
+            .padding(.top, Theme.Spacing.lg)
         }
         .multilineTextAlignment(.center)
     }
 
     private func faultTitle(_ fault: KioskViewModel.Fault) -> Text {
         switch fault {
+        case .analyzerUnpaired:
+            Text("No analyser paired", comment: "Kiosk message when no analyser has been chosen yet")
         case .analyzerDisconnected:
             Text("Analyser not connected", comment: "Kiosk message when the breath analyser is unreachable")
         case .calibrationExpired:
@@ -147,8 +169,15 @@ struct KioskIdleView: View {
         }
     }
 
-    private var calibration: String {
-        viewModel.analyzer.calibrationExpiresOn.formatted(.dateTime.day().month().year())
+    @ViewBuilder
+    private var analyzerStatus: some View {
+        if let analyzer = viewModel.analyzer {
+            let calibration = analyzer.calibrationExpiresOn.formatted(.dateTime.day().month().year())
+            Text("\(analyzer.serial), calibrated to \(calibration)",
+                 comment: "Analyser serial number and calibration expiry")
+        } else {
+            Text("No analyser connected", comment: "Shown in the footer while nothing is paired")
+        }
     }
 
     private var footer: some View {
@@ -172,16 +201,15 @@ struct KioskIdleView: View {
 
             Spacer()
 
-            Text("\(viewModel.analyzer.serial), calibrated to \(calibration)",
-                 comment: "Analyser serial number and calibration expiry")
+            analyzerStatus
         }
         .font(Theme.Font.caption)
         .foregroundStyle(Theme.Color.secondaryText)
         .padding(Theme.Spacing.lg)
         .frame(maxWidth: .infinity)
         .background(Theme.Color.secondaryBackground)
-        // Long press signs the terminal out.
-        .onLongPressGesture(minimumDuration: 2, perform: onSignOut)
+        // Long press opens the controls that are not for drivers.
+        .onLongPressGesture(minimumDuration: 2) { isShowingTerminal = true }
     }
 }
 
@@ -193,7 +221,7 @@ private func previewViewModel(
 ) -> KioskViewModel {
     KioskViewModel(
         terminalName: "Cubao terminal",
-        analyzer: analyzer,
+        link: .connected(to: analyzer),
         employees: MockEmployeeRepository()
     )
 }

@@ -30,6 +30,7 @@ struct KioskView: View {
             .background(Theme.Color.background)
             .animation(Theme.Animation.standard, value: viewModel.phase)
             .persistentSystemOverlays(.hidden)
+            .task { await viewModel.link.start() }
             .task { await readCards() }
             .onDisappear { viewModel.camera?.stop() }
     }
@@ -93,7 +94,7 @@ struct KioskView: View {
 private func previewViewModel() -> KioskViewModel {
     KioskViewModel(
         terminalName: "Cubao terminal",
-        analyzer: SimulatedBreathAnalyzer(),
+        link: .connected(to: SimulatedBreathAnalyzer()),
         employees: MockEmployeeRepository()
     )
 }

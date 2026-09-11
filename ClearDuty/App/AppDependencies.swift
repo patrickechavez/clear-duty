@@ -24,6 +24,9 @@ final class AppDependencies {
     // One capture session for the app, built the first time the kiosk asks.
     private lazy var camera = KioskCamera()
 
+    // The analyser this terminal is paired to, kept across kiosk rebuilds.
+    private lazy var analyzers = AnalyzerLink(hub: SimulatedAnalyzerHub())
+
     init(
         session: SessionManager,
         auth: any AuthRepository,
@@ -142,6 +145,13 @@ final class AppDependencies {
         )
     }
 
+    // The demo starts already paired, so the kiosk works on the first screen.
+    private static func demoLink() -> AnalyzerLink {
+        let pairing = PairedAnalyzerStore(defaults: UserDefaults(suiteName: "demo") ?? .standard)
+        pairing.serial = AnalyzerDevice.simulated.serial
+        return AnalyzerLink(hub: SimulatedAnalyzerHub(), pairing: pairing)
+    }
+
     #endif
 
     private static func urlSession() -> URLSession {
@@ -172,7 +182,7 @@ final class AppDependencies {
         if AppEnvironment.isDemo {
             return KioskViewModel(
                 terminalName: "Cubao terminal",
-                analyzer: SimulatedBreathAnalyzer(),
+                link: Self.demoLink(),
                 employees: employees
             )
         }
@@ -180,7 +190,7 @@ final class AppDependencies {
 
         return KioskViewModel(
             terminalName: "Cubao terminal",
-            analyzer: SimulatedBreathAnalyzer(),
+            link: analyzers,
             employees: employees,
             presenceDetector: camera,
             photos: camera,

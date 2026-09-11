@@ -18,7 +18,7 @@ struct KioskViewModelTests {
     ) -> KioskViewModel {
         KioskViewModel(
             terminalName: "Cubao terminal",
-            analyzer: analyzer,
+            link: .connected(to: analyzer),
             employees: employees,
             presenceDetector: presence,
             photos: photos
@@ -40,6 +40,25 @@ struct KioskViewModelTests {
         let viewModel = makeViewModel()
 
         #expect(viewModel.state() == .scanning)
+    }
+
+    // A terminal with no analyser chosen says so, and takes no cards.
+    @Test func reportsAnUnpairedAnalyzer() async {
+        let employees = MockEmployeeRepository()
+        let viewModel = KioskViewModel(
+            terminalName: "Cubao terminal",
+            link: AnalyzerLink(
+                hub: SimulatedAnalyzerHub(),
+                pairing: PairedAnalyzerStore(defaults: UserDefaults(suiteName: UUID().uuidString) ?? .standard)
+            ),
+            employees: employees
+        )
+
+        await viewModel.cardWasRead("CARD-4F2A91")
+
+        #expect(viewModel.state() == .fault(.analyzerUnpaired))
+        #expect(viewModel.phase == .idle)
+        #expect(employees.lookups.isEmpty)
     }
 
     @Test func reportsADisconnectedAnalyzer() {

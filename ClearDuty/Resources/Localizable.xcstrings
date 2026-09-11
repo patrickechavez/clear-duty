@@ -20,6 +20,9 @@
         }
       }
     },
+    "%@ did not answer" : {
+      "comment" : "Shown when the paired analyser cannot be reached"
+    },
     "%@, calibrated to %@" : {
       "comment" : "Analyser serial number and calibration expiry",
       "localizations" : {
@@ -72,6 +75,9 @@
     },
     "Active driver" : {
       "comment" : "Shown when a scanned driver may be tested"
+    },
+    "Analyser" : {
+      "comment" : "Section listing the paired breath analyser"
     },
     "Analyser calibration has expired" : {
       "comment" : "Kiosk message when the analyser is out of date"
@@ -229,11 +235,14 @@
         }
       }
     },
+    "Disconnect" : {
+      "comment" : "Drops the paired analyser"
+    },
     "Do not blow yet" : {
       "comment" : "Warns the driver not to blow during warm-up"
     },
     "Done" : {
-      "comment" : "Confirms the chosen date"
+      "comment" : "Closes the supervisor settings sheet\nConfirms the chosen date"
     },
     "Edit Profile" : {
       "comment" : "Title of the placeholder edit-profile screen",
@@ -334,8 +343,14 @@
         }
       }
     },
+    "In range" : {
+      "comment" : "Section listing analysers the terminal can see"
+    },
     "Is this the person in front of you?" : {
       "comment" : "Asks the supervisor to check the photo against the driver"
+    },
+    "It may be off, out of range, or paired to another terminal." : {
+      "comment" : "Why the paired analyser cannot be reached"
     },
     "Items" : {
       "comment" : "Home tab title",
@@ -391,6 +406,9 @@
         }
       }
     },
+    "Looking for %@" : {
+      "comment" : "Shown while the terminal waits for its analyser"
+    },
     "name@example.com" : {
       "comment" : "Placeholder for the email field",
       "extractionState" : "manual",
@@ -418,8 +436,17 @@
     "No access" : {
 
     },
+    "No analyser connected" : {
+      "comment" : "Shown in the footer while nothing is paired"
+    },
+    "No analyser paired" : {
+      "comment" : "Kiosk message when no analyser has been chosen yet"
+    },
     "No internet connection" : {
       "comment" : "Banner shown while the device is offline"
+    },
+    "Nobody can be tested until someone signs back in." : {
+      "comment" : "What happens after signing out of the kiosk"
     },
     "Not cleared" : {
       "comment" : "Shown when a driver fails the breath test"
@@ -432,6 +459,9 @@
     },
     "Not this person" : {
       "comment" : "Rejects a scanned card as the wrong driver"
+    },
+    "Nothing in range" : {
+      "comment" : "Shown when no analysers can be seen"
     },
     "OK" : {
       "comment" : "Alert dismiss button",
@@ -586,6 +616,9 @@
         }
       }
     },
+    "Set up the analyser" : {
+      "comment" : "Opens the analyser settings from the fault screen"
+    },
     "Settings" : {
       "comment" : "Title of the placeholder settings screen",
       "extractionState" : "manual",
@@ -622,6 +655,9 @@
         }
       }
     },
+    "Sign out" : {
+      "comment" : "Signs the supervisor out of the terminal"
+    },
     "Sign Out" : {
       "comment" : "Confirm button of the sign-out alert",
       "extractionState" : "manual",
@@ -633,6 +669,9 @@
           }
         }
       }
+    },
+    "Sign out of this terminal?" : {
+      "comment" : "Confirms signing out of the kiosk"
     },
     "Sign out of your account?" : {
       "comment" : "Title of the sign-out confirmation alert",
@@ -696,6 +735,9 @@
     },
     "Temporarily unavailable" : {
 
+    },
+    "Terminal" : {
+      "comment" : "Title of the supervisor settings sheet"
     },
     "Test not completed" : {
       "comment" : "Shown when the analyser produced no usable reading"
@@ -788,7 +830,7 @@
       }
     },
     "Try again" : {
-      "comment" : "Restarts a cancelled test"
+      "comment" : "Restarts a cancelled test\nRetries connecting to the paired analyser"
     },
     "Try Again" : {
       "comment" : "Button that retries a failed network request",

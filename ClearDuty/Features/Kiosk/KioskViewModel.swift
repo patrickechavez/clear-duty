@@ -75,6 +75,7 @@ final class KioskViewModel {
 
     // Conditions that stop the terminal producing a valid test.
     enum Fault: Equatable {
+        case analyzerUnpaired
         case analyzerDisconnected
         case calibrationExpired
     }
@@ -93,7 +94,10 @@ final class KioskViewModel {
     // Held until persistence exists to write it.
     private(set) var lastCancellation: Outcome?
 
-    @ObservationIgnored let analyzer: any BreathAnalyzer
+    @ObservationIgnored let link: AnalyzerLink
+
+    // Whatever analyser the terminal is paired to right now, if any.
+    var analyzer: (any BreathAnalyzer)? { link.analyzer }
 
     @ObservationIgnored private let employees: any EmployeeRepository
 
@@ -111,7 +115,7 @@ final class KioskViewModel {
 
     init(
         terminalName: String,
-        analyzer: any BreathAnalyzer,
+        link: AnalyzerLink,
         employees: any EmployeeRepository,
         presenceDetector: any PresenceDetector = SimulatedPresenceDetector(),
         photos: any PhotoCapture = SimulatedPhotoCapture(),
@@ -119,7 +123,7 @@ final class KioskViewModel {
         camera: KioskCamera? = nil
     ) {
         self.terminalName = terminalName
-        self.analyzer = analyzer
+        self.link = link
         self.employees = employees
         self.presenceDetector = presenceDetector
         self.photos = photos
@@ -171,6 +175,11 @@ final class KioskViewModel {
     }
 
     private func takeReading(for driver: Employee) async {
+        guard let analyzer else {
+            phase = .result(outcome(for: driver, reading: nil, reason: .analyzerFailed))
+            return
+        }
+
         phase = .blowing(driver, .warmingUp(secondsRemaining: 0))
         var photo: Task<Data?, Never>?
 
@@ -248,7 +257,8 @@ final class KioskViewModel {
     }
 
     func state(at date: Date = .now) -> State {
-        if !analyzer.isConnected { return .fault(.analyzerDisconnected) }
+        if link.connection == .unpaired { return .fault(.analyzerUnpaired) }
+        guard let analyzer, analyzer.isConnected else { return .fault(.analyzerDisconnected) }
         if !analyzer.isCalibrated(on: date) { return .fault(.calibrationExpired) }
         return .scanning
     }
