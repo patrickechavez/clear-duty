@@ -129,9 +129,10 @@ final class KioskViewModel {
         self.camera = camera
     }
 
-    // Resolves a scanned code to a driver, or to why it was refused.
+    // Resolves a scanned code to a driver, or to why it was refused. A faulted
+    // terminal ignores cards, since it cannot produce a valid test.
     func cardWasRead(_ code: String) async {
-        guard phase == .idle else { return }
+        guard phase == .idle, state() == .scanning else { return }
         phase = .looking
 
         do {

@@ -111,6 +111,30 @@ struct KioskViewModelTests {
         #expect(employees.lookups == ["CARD-4F2A91"])
     }
 
+    // A terminal that cannot test does not start one.
+    @Test func ignoresAScanWhileTheAnalyserIsDisconnected() async {
+        let employees = MockEmployeeRepository()
+        let viewModel = makeViewModel(
+            analyzer: SimulatedBreathAnalyzer(isConnected: false),
+            employees: employees
+        )
+
+        await viewModel.cardWasRead("CARD-4F2A91")
+
+        #expect(viewModel.phase == .idle)
+        #expect(employees.lookups.isEmpty)
+    }
+
+    @Test func ignoresAScanWhileTheCalibrationHasLapsed() async {
+        let viewModel = makeViewModel(
+            analyzer: SimulatedBreathAnalyzer(calibrationExpiresOn: .now.addingTimeInterval(-86_400))
+        )
+
+        await viewModel.cardWasRead("CARD-4F2A91")
+
+        #expect(viewModel.phase == .idle)
+    }
+
     @Test func returnsToIdleAfterARejection() async {
         let viewModel = makeViewModel()
         await viewModel.cardWasRead("CARD-NOTREAL")
