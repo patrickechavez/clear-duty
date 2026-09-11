@@ -187,6 +187,9 @@
         }
       }
     },
+    "Continue as demo supervisor" : {
+      "comment" : "Signs in to the demo without credentials"
+    },
     "Country" : {
       "comment" : "Title of the country picker sheet"
     },
