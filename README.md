@@ -30,15 +30,34 @@ The demo runs on mock data alone: no network, no Supabase, no keychain, no
 Firebase. A simulator has no camera, so the idle screen offers four cards
 instead of the reader, one per outcome:
 
-| Card | What happens |
-| --- | --- |
-| Active driver | Confirm screen, then the blow, then a verdict |
-| Suspended driver | Refused with "Not cleared to test" |
-| Staff card | Refused the same way, on purpose |
-| Unknown card | "Card not recognised" |
+| Card | Code | What happens |
+| --- | --- | --- |
+| Active driver | `CARD-4F2A91` | Confirm screen, then the blow, then a verdict |
+| Suspended driver | `CARD-0FA983` | Refused with "Not cleared to test" |
+| Staff card | `CARD-S014` | Refused the same way, on purpose |
+| Unknown card | `CARD-NOTREAL` | "Card not recognised" |
 
 Scanning a real code, face presence and the photo need the iPad. Everything
 demo-only is compiled out of Staging and Production.
+
+## Test it with the camera
+
+This is the half a simulator cannot show: reading the card, waiting for a face,
+and the photo taken mid-blow. It needs an iPad, since the iPhone build only
+shows the dispatcher board placeholder.
+
+1. Run the **Development** scheme on an iPad
+2. Sign in with `kiosk.cubao@clearduty.test`, password the same
+3. Hold a card up to the camera, printed or shown on a second screen
+
+The cards are the same four as above:
+[active driver](.github/assets/card-active-driver.png),
+[suspended driver](.github/assets/card-suspended-driver.png),
+[staff](.github/assets/card-staff.png),
+[unknown](.github/assets/card-unknown.png).
+
+Hold it about an arm's length from the screen. Once a driver is confirmed, step
+into frame: the blow will not start until the camera sees a face.
 
 ## How a test runs
 
@@ -156,9 +175,9 @@ ClearDuty/
 └── Resources/        String Catalog
 ```
 
-## Running it against Supabase
+## Pointing it at your own Supabase
 
-Only needed if you want live data and a real card.
+Only needed to run it against your own data rather than the test account above.
 
 - An `employees` table with `card_code`, `employee_no`, `first_name`,
   `last_name`, `role` and `status`, plus an auth user for the supervisor. The
