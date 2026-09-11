@@ -1,11 +1,11 @@
 # ClearDuty
 
-An alcohol testing kiosk for public utility vehicle drivers, run on an iPad
+An alcohol testing kiosk for public utility vehicle drivers, running on an iPad
 mounted at the depot. A driver holds their ID up to the camera, a supervisor
 confirms the face matches, the driver blows, and the terminal says whether they
 are cleared to drive.
 
-iOS 17+ · Swift 6 strict concurrency · SwiftUI · Supabase
+iPadOS 17+ · landscape only · Swift 6 strict concurrency · SwiftUI · Supabase
 
 **Working.** Card scanning, employee lookup, the supervised confirm step, the
 blow reported stage by stage, face presence gating the start, a photo taken
@@ -43,8 +43,7 @@ demo-only is compiled out of Staging and Production.
 ## Test it with the camera
 
 This is the half a simulator cannot show: reading the card, waiting for a face,
-and the photo taken mid-blow. It needs an iPad, since the iPhone build only
-shows the dispatcher board placeholder.
+and the photo taken mid-blow.
 
 1. Run the **Development** scheme on an iPad
 2. Sign in with `kiosk.cubao@clearduty.test`, password the same

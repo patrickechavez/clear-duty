@@ -94,9 +94,6 @@
     "Blow now" : {
       "comment" : "Tells the driver to start blowing"
     },
-    "Board coming soon" : {
-
-    },
     "Cancel" : {
       "comment" : "Dismisses the date picker without choosing\nDismisses the picker without choosing"
     },
@@ -658,18 +655,6 @@
     "Sign out" : {
       "comment" : "Signs the supervisor out of the terminal"
     },
-    "Sign Out" : {
-      "comment" : "Confirm button of the sign-out alert",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sign Out"
-          }
-        }
-      }
-    },
     "Sign out of this terminal?" : {
       "comment" : "Confirms signing out of the kiosk"
     },
@@ -813,9 +798,6 @@
           }
         }
       }
-    },
-    "Today's drivers and exceptions go here." : {
-
     },
     "Too many attempts. Please wait a moment and try again." : {
       "comment" : "Error shown when rate limited",
