@@ -262,12 +262,15 @@ One `AVCaptureSession` serves the whole kiosk flow, owned by `KioskCamera`:
 - **Card scanning.** An `AVCaptureMetadataOutput` reading QR and Code 128,
   reported as an `AsyncStream<String>`. The same code is ignored for five
   seconds so one card held up does not scan repeatedly.
-- **Presence.** An `AVCaptureVideoDataOutput` running Vision face detection
-  four times a second, reported as an `AsyncStream<PresenceReading>`.
+- **Presence.** The same metadata output also reports faces, so detection costs
+  no extra frames and no Vision request. Faces are reported as they appear and
+  move, never as an empty frame, so `PresenceClock` turns "a face was last seen
+  at" into a reading four times a second while a test is running.
 - **The photo.** An `AVCapturePhotoOutput` fired once, mid-blow.
 
-Both are behind protocols, `PresenceDetector` and `PhotoCapture`, so the view
-model is tested with simulated versions and never touches AVFoundation.
+Presence and the photo are behind protocols, `PresenceDetector` and
+`PhotoCapture`, so the view model is tested with simulated versions and never
+touches AVFoundation.
 
 ### Why presence matters
 
