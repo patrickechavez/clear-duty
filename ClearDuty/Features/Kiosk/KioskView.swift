@@ -16,6 +16,9 @@ struct KioskView: View {
     // How long a refused card stays on screen before the kiosk resets.
     private let rejectionDuration: Duration = .seconds(4)
 
+    // Long enough for the driver to read the verdict, short enough for a queue.
+    private let resultDuration: Duration = .seconds(6)
+
     init(viewModel: KioskViewModel, onSignOut: @escaping () -> Void) {
         _viewModel = State(wrappedValue: viewModel)
         self.onSignOut = onSignOut
@@ -46,9 +49,19 @@ struct KioskView: View {
         case let .confirming(driver):
             KioskConfirmView(
                 driver: driver,
-                onConfirm: viewModel.identityConfirmed,
+                onConfirm: { Task { await viewModel.identityConfirmed() } },
                 onReject: viewModel.returnToIdle
             )
+
+        case let .blowing(driver):
+            KioskBlowView(driver: driver)
+
+        case let .result(outcome):
+            KioskResultView(outcome: outcome)
+                .task {
+                    try? await Task.sleep(for: resultDuration)
+                    viewModel.returnToIdle()
+                }
 
         case let .rejected(rejection):
             KioskRejectedView(rejection: rejection)

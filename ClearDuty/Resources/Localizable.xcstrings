@@ -85,6 +85,9 @@
     "Back Soon" : {
 
     },
+    "Blow steadily" : {
+      "comment" : "Kiosk instruction while the analyser reads"
+    },
     "Board coming soon" : {
 
     },
@@ -165,6 +168,9 @@
           }
         }
       }
+    },
+    "Cleared for duty" : {
+      "comment" : "Shown when a driver passes the breath test"
     },
     "Confirm password" : {
       "comment" : "Label for the password confirmation field",
@@ -337,6 +343,9 @@
         }
       }
     },
+    "Keep going until the tone stops" : {
+      "comment" : "How long to keep blowing into the analyser"
+    },
     "Last name" : {
       "comment" : "Placeholder for the last name field",
       "extractionState" : "manual",
@@ -403,6 +412,9 @@
     "No internet connection" : {
       "comment" : "Banner shown while the device is offline"
     },
+    "Not cleared" : {
+      "comment" : "Shown when a driver fails the breath test"
+    },
     "Not cleared to test" : {
       "comment" : "Shown when a scanned card may not be tested"
     },
@@ -448,6 +460,9 @@
         }
       }
     },
+    "percent BAC" : {
+      "comment" : "Unit shown under a breath test reading"
+    },
     "Phone" : {
       "comment" : "Label for the phone number field"
     },
@@ -490,6 +505,9 @@
     "Profile photo for %@" : {
 
     },
+    "Recording" : {
+      "comment" : "Shown while the kiosk captures a photo during the blow"
+    },
     "Reset Password" : {
       "comment" : "Title of the forgot-password screen",
       "extractionState" : "manual",
@@ -527,7 +545,7 @@
       }
     },
     "See your supervisor." : {
-      "comment" : "What a driver should do after a refused card"
+      "comment" : "What a driver should do after a refused card\nWhat a driver should do after failing"
     },
     "Select" : {
       "comment" : "Placeholder for a date field\nPlaceholder for a picker field"
@@ -658,6 +676,9 @@
     "Temporarily unavailable" : {
 
     },
+    "Test not completed" : {
+      "comment" : "Shown when the analyser produced no usable reading"
+    },
     "Testing cannot start. Tell your supervisor." : {
       "comment" : "What to do when the terminal cannot accept tests"
     },
@@ -754,6 +775,9 @@
         }
       }
     },
+    "Try again." : {
+      "comment" : "What a driver should do after an unusable sample"
+    },
     "Update Now" : {
       "comment" : "Button that opens the App Store listing",
       "extractionState" : "manual",
@@ -795,6 +819,9 @@
           }
         }
       }
+    },
+    "Valid for this shift" : {
+      "comment" : "How long a passed test lasts"
     },
     "We couldn't establish a secure connection. Please try again." : {
       "comment" : "Error shown when the server's certificate fails trust validation"

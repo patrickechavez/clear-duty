@@ -28,6 +28,23 @@ final class KioskViewModel {
         case looking
         case confirming(Employee)
         case rejected(CardRejection)
+        case blowing(Employee)
+        case result(Outcome)
+    }
+
+    // What a completed test came to, and who it was about.
+    struct Outcome: Equatable {
+        let driver: Employee
+        let reading: Double?
+        let threshold: Double
+        let verdict: Verdict
+    }
+
+    enum Verdict: Equatable {
+        case cleared
+        case blocked
+        // The blow did not produce a usable sample, so nothing was decided.
+        case invalid
     }
 
     // Why a scanned card did not reach the confirm screen.
@@ -50,6 +67,10 @@ final class KioskViewModel {
         case analyzerDisconnected
         case calibrationExpired
     }
+
+    // Zero tolerance for public utility drivers. Belongs on a policy record
+    // once one exists, and is snapshotted onto every test either way.
+    static let threshold: Double = 0
 
     let terminalName: String
 
@@ -91,10 +112,27 @@ final class KioskViewModel {
         phase = .idle
     }
 
-    // The supervisor confirmed the face matches; the blow comes next.
-    func identityConfirmed() {
-        guard case .confirming = phase else { return }
-        phase = .idle
+    // The supervisor confirmed the face matches, so take the reading.
+    func identityConfirmed() async {
+        guard case let .confirming(driver) = phase else { return }
+        phase = .blowing(driver)
+
+        do {
+            let reading = try await analyzer.measure()
+            phase = .result(Outcome(
+                driver: driver,
+                reading: reading,
+                threshold: Self.threshold,
+                verdict: reading <= Self.threshold ? .cleared : .blocked
+            ))
+        } catch {
+            phase = .result(Outcome(
+                driver: driver,
+                reading: nil,
+                threshold: Self.threshold,
+                verdict: .invalid
+            ))
+        }
     }
 
     func state(at date: Date = .now) -> State {

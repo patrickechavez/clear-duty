@@ -112,6 +112,71 @@ struct KioskViewModelTests {
         #expect(!viewModel.isCameraRunning())
     }
 
+    @Test func clearsADriverWhoBlowsZero() async {
+        let viewModel = makeViewModel(analyzer: SimulatedBreathAnalyzer(reading: 0, blowDuration: .zero))
+        await viewModel.cardWasRead("CARD-4F2A91")
+
+        await viewModel.identityConfirmed()
+
+        #expect(viewModel.phase == .result(KioskViewModel.Outcome(
+            driver: SampleData.driver,
+            reading: 0,
+            threshold: 0,
+            verdict: .cleared
+        )))
+    }
+
+    // Zero tolerance, so anything above zero blocks.
+    @Test func blocksADriverOverTheThreshold() async {
+        let viewModel = makeViewModel(analyzer: SimulatedBreathAnalyzer(reading: 0.01, blowDuration: .zero))
+        await viewModel.cardWasRead("CARD-4F2A91")
+
+        await viewModel.identityConfirmed()
+
+        guard case let .result(outcome) = viewModel.phase else {
+            Issue.record("expected a result")
+            return
+        }
+        #expect(outcome.verdict == .blocked)
+        #expect(outcome.reading == 0.01)
+    }
+
+    // A dead analyser produces no reading, which is not a failed test.
+    @Test func recordsAnUnusableSampleAsInvalid() async {
+        let viewModel = makeViewModel(
+            analyzer: SimulatedBreathAnalyzer(isConnected: false, blowDuration: .zero)
+        )
+        await viewModel.cardWasRead("CARD-4F2A91")
+
+        await viewModel.identityConfirmed()
+
+        guard case let .result(outcome) = viewModel.phase else {
+            Issue.record("expected a result")
+            return
+        }
+        #expect(outcome.verdict == .invalid)
+        #expect(outcome.reading == nil)
+    }
+
+    @Test func blowsOnlyFromTheConfirmScreen() async {
+        let viewModel = makeViewModel()
+
+        await viewModel.identityConfirmed()
+
+        #expect(viewModel.phase == .idle)
+    }
+
+    @Test func returnsToIdleAfterAResult() async {
+        let viewModel = makeViewModel(analyzer: SimulatedBreathAnalyzer(blowDuration: .zero))
+        await viewModel.cardWasRead("CARD-4F2A91")
+        await viewModel.identityConfirmed()
+
+        viewModel.returnToIdle()
+
+        #expect(viewModel.phase == .idle)
+        #expect(viewModel.isCameraRunning())
+    }
+
     @Test func startsWithAnEmptyTally() {
         let viewModel = makeViewModel()
 
