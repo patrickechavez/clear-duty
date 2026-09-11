@@ -8,3 +8,7 @@ MARKETING_VERSION = 1.0.0
 
 // Must go up on every upload; CI usually sets this
 CURRENT_PROJECT_VERSION = 1
+
+// Shown when the kiosk first asks for the camera. A build setting rather than
+// an Info.plist entry, because Xcode rewrites that file.
+INFOPLIST_KEY_NSCameraUsageDescription = ClearDuty uses the camera to read the code on your ID card.

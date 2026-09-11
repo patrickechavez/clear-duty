@@ -6,23 +6,39 @@
 
 import SwiftUI
 
-// Placeholder shell until the kiosk and board replace it.
+// Shows the kiosk on iPad and the board on iPhone.
 struct DashboardView: View {
 
     let dependencies: AppDependencies
 
     var body: some View {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            KioskView(viewModel: dependencies.makeKioskViewModel(), onSignOut: signOut)
+        } else {
+            BoardPlaceholderView(onSignOut: signOut)
+        }
+    }
+
+    private func signOut() {
+        Task { await dependencies.session.signOut() }
+    }
+}
+
+// Placeholder until the board is built.
+struct BoardPlaceholderView: View {
+
+    let onSignOut: () -> Void
+
+    var body: some View {
         NavigationStack {
             ContentUnavailableView {
-                Label("Nothing here yet", systemImage: "hammer")
+                Label("Board coming soon", systemImage: "list.clipboard")
             } description: {
-                Text("The kiosk and the dispatcher board go here.")
+                Text("Today's drivers and exceptions go here.")
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        Task { await dependencies.session.signOut() }
-                    } label: {
+                    Button(action: onSignOut) {
                         Text("Sign Out", comment: "Button that signs the user out")
                     }
                 }

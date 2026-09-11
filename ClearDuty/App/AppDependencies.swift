@@ -128,4 +128,9 @@ final class AppDependencies {
         LoginViewModel(auth: auth, session: session, analytics: analytics)
     }
 
+    // The simulator stands in until a CoreBluetooth analyser exists.
+    func makeKioskViewModel() -> KioskViewModel {
+        KioskViewModel(terminalName: "Cubao terminal", analyzer: SimulatedBreathAnalyzer())
+    }
+
 }
