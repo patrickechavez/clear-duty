@@ -49,11 +49,14 @@ struct KioskIdleView: View {
         #endif
     }
 
-    // Preview sits at the top, next to the camera.
+    // Preview sits at the top, next to the camera, in the camera's own 4:3.
     private var cameraScanner: some View {
         VStack(spacing: Theme.Spacing.xxl) {
             CameraPreview(camera: viewModel.camera)
-                .frame(width: 320, height: 200)
+                .aspectRatio(4 / 3, contentMode: .fit)
+                .containerRelativeFrame(.horizontal) { width, _ in
+                    min(width * 0.5, Theme.Size.kioskPreviewMaxWidth)
+                }
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.md))
                 .overlay {
                     RoundedRectangle(cornerRadius: Theme.Radius.md)
@@ -65,7 +68,8 @@ struct KioskIdleView: View {
                 Text("Hold your ID up to the camera", comment: "Kiosk instruction while scanning")
                     .font(Theme.Font.sectionTitle)
 
-                Text("About an arm's length away", comment: "How far to hold the ID from the camera")
+                Text("QR code facing the screen, about 20 cm away",
+                     comment: "Which side of the ID to show and how close to hold it")
                     .font(Theme.Font.secondary)
                     .foregroundStyle(Theme.Color.secondaryText)
             }

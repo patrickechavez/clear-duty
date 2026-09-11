@@ -46,9 +46,6 @@
     "917 123 4567" : {
       "comment" : "Placeholder for the phone number field"
     },
-    "About an arm's length away" : {
-      "comment" : "How far to hold the ID from the camera"
-    },
     "Account" : {
       "comment" : "Header of the account section on the profile screen",
       "extractionState" : "manual",
@@ -519,6 +516,9 @@
     },
     "Profile photo for %@" : {
 
+    },
+    "QR code facing the screen, about 20 cm away" : {
+      "comment" : "Which side of the ID to show and how close to hold it"
     },
     "Reset Password" : {
       "comment" : "Title of the forgot-password screen",

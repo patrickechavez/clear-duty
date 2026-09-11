@@ -44,6 +44,9 @@ enum Theme {
 
         // A mounted iPad is tapped at arm's length, so 44 is too small there.
         static let kioskTapTarget: CGFloat = 88
+
+        // Half the screen on a mini, capped so it stays sane on a 13 inch.
+        static let kioskPreviewMaxWidth: CGFloat = 560
     }
 
     enum Color {
