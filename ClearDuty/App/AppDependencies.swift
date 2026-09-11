@@ -17,6 +17,7 @@ final class AppDependencies {
 
     private let auth: any AuthRepository
     private let users: any UserRepository
+    private let employees: any EmployeeRepository
     private let imageLoader: any ImageLoading
     private let tokenStore: any TokenStore
 
@@ -24,6 +25,7 @@ final class AppDependencies {
         session: SessionManager,
         auth: any AuthRepository,
         users: any UserRepository,
+        employees: any EmployeeRepository,
         imageLoader: any ImageLoading,
         tokenStore: any TokenStore,
         deepLinks: DeepLinkParser,
@@ -34,6 +36,7 @@ final class AppDependencies {
         self.session = session
         self.auth = auth
         self.users = users
+        self.employees = employees
         self.imageLoader = imageLoader
         self.tokenStore = tokenStore
         self.deepLinks = deepLinks
@@ -99,6 +102,7 @@ final class AppDependencies {
             session: sessionManager,
             auth: LiveAuthRepository(api: api),
             users: users,
+            employees: LiveEmployeeRepository(api: api),
             imageLoader: ImageLoader.shared,
             tokenStore: tokenStore,
             deepLinks: DeepLinkParser(),
@@ -130,7 +134,11 @@ final class AppDependencies {
 
     // The simulator stands in until a CoreBluetooth analyser exists.
     func makeKioskViewModel() -> KioskViewModel {
-        KioskViewModel(terminalName: "Cubao terminal", analyzer: SimulatedBreathAnalyzer())
+        KioskViewModel(
+            terminalName: "Cubao terminal",
+            analyzer: SimulatedBreathAnalyzer(),
+            employees: employees
+        )
     }
 
 }

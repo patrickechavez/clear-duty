@@ -5,14 +5,16 @@
 //
 
 import SwiftUI
-import os
 
-// Hosts the kiosk phases; later ones replace the idle screen in place.
+// Hosts the kiosk phases; each one replaces the last in place.
 struct KioskView: View {
 
     @State private var viewModel: KioskViewModel
 
     let onSignOut: () -> Void
+
+    // How long a refused card stays on screen before the kiosk resets.
+    private let rejectionDuration: Duration = .seconds(4)
 
     init(viewModel: KioskViewModel, onSignOut: @escaping () -> Void) {
         _viewModel = State(wrappedValue: viewModel)
@@ -20,24 +22,57 @@ struct KioskView: View {
     }
 
     var body: some View {
-        KioskIdleView(viewModel: viewModel, onRead: cardWasRead, onSignOut: onSignOut)
+        content
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.Color.background)
+            .animation(Theme.Animation.standard, value: viewModel.phase)
             .persistentSystemOverlays(.hidden)
     }
 
-    // Logs the scan until the employee lookup exists.
-    private func cardWasRead(_ code: String) {
-        AppLogger.data.breadcrumb("Card read at \(viewModel.terminalName)")
+    @ViewBuilder
+    private var content: some View {
+        switch viewModel.phase {
+        case .idle:
+            KioskIdleView(
+                viewModel: viewModel,
+                onRead: { code in Task { await viewModel.cardWasRead(code) } },
+                onSignOut: onSignOut
+            )
+
+        case .looking:
+            ProgressView()
+                .controlSize(.large)
+
+        case let .confirming(driver):
+            KioskConfirmView(
+                driver: driver,
+                onConfirm: viewModel.identityConfirmed,
+                onReject: viewModel.returnToIdle
+            )
+
+        case let .rejected(rejection):
+            KioskRejectedView(rejection: rejection)
+                .task {
+                    try? await Task.sleep(for: rejectionDuration)
+                    viewModel.returnToIdle()
+                }
+        }
     }
 }
 
 #if DEBUG
 
-#Preview {
-    KioskView(
-        viewModel: KioskViewModel(terminalName: "Cubao terminal", analyzer: SimulatedBreathAnalyzer()),
-        onSignOut: {}
+@MainActor
+private func previewViewModel() -> KioskViewModel {
+    KioskViewModel(
+        terminalName: "Cubao terminal",
+        analyzer: SimulatedBreathAnalyzer(),
+        employees: MockEmployeeRepository()
     )
+}
+
+#Preview {
+    KioskView(viewModel: previewViewModel(), onSignOut: {})
 }
 
 #endif

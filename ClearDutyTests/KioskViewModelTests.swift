@@ -11,9 +11,10 @@ import Testing
 struct KioskViewModelTests {
 
     private func makeViewModel(
-        analyzer: SimulatedBreathAnalyzer = SimulatedBreathAnalyzer()
+        analyzer: SimulatedBreathAnalyzer = SimulatedBreathAnalyzer(),
+        employees: MockEmployeeRepository = MockEmployeeRepository()
     ) -> KioskViewModel {
-        KioskViewModel(terminalName: "Cubao terminal", analyzer: analyzer)
+        KioskViewModel(terminalName: "Cubao terminal", analyzer: analyzer, employees: employees)
     }
 
     @Test func scansWhenTheAnalyzerIsHealthy() {
@@ -49,6 +50,66 @@ struct KioskViewModelTests {
         )
 
         #expect(viewModel.state() == .fault(.analyzerDisconnected))
+    }
+
+    @Test func startsIdle() {
+        #expect(makeViewModel().phase == .idle)
+    }
+
+    @Test func confirmsAKnownDriver() async {
+        let viewModel = makeViewModel()
+
+        await viewModel.cardWasRead("CARD-4F2A91")
+
+        #expect(viewModel.phase == .confirming(SampleData.driver))
+    }
+
+    @Test func rejectsAnUnknownCard() async {
+        let viewModel = makeViewModel()
+
+        await viewModel.cardWasRead("CARD-NOTREAL")
+
+        #expect(viewModel.phase == .rejected(.unrecognised))
+    }
+
+    // A suspended driver and a staff card look the same on a mounted screen.
+    @Test func rejectsASuspendedDriverAndStaffAlike() async {
+        let suspended = makeViewModel()
+        await suspended.cardWasRead("CARD-0FA983")
+
+        let staff = makeViewModel()
+        await staff.cardWasRead("CARD-S014")
+
+        #expect(suspended.phase == .rejected(.notCleared))
+        #expect(staff.phase == .rejected(.notCleared))
+    }
+
+    @Test func ignoresAScanWhileAnotherIsInFlight() async {
+        let employees = MockEmployeeRepository()
+        let viewModel = makeViewModel(employees: employees)
+
+        await viewModel.cardWasRead("CARD-4F2A91")
+        await viewModel.cardWasRead("CARD-0FA983")
+
+        #expect(viewModel.phase == .confirming(SampleData.driver))
+        #expect(employees.lookups == ["CARD-4F2A91"])
+    }
+
+    @Test func returnsToIdleAfterARejection() async {
+        let viewModel = makeViewModel()
+        await viewModel.cardWasRead("CARD-NOTREAL")
+
+        viewModel.returnToIdle()
+
+        #expect(viewModel.phase == .idle)
+    }
+
+    @Test func keepsTheCameraOffWhileConfirming() async {
+        let viewModel = makeViewModel()
+
+        await viewModel.cardWasRead("CARD-4F2A91")
+
+        #expect(!viewModel.isCameraRunning())
     }
 
     @Test func startsWithAnEmptyTally() {

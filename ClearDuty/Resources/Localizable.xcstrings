@@ -73,6 +73,9 @@
         }
       }
     },
+    "Active driver" : {
+      "comment" : "Shown when a scanned driver may be tested"
+    },
     "Analyser calibration has expired" : {
       "comment" : "Kiosk message when the analyser is out of date"
     },
@@ -99,6 +102,9 @@
           }
         }
       }
+    },
+    "Card not recognised" : {
+      "comment" : "Shown when a scanned card is not in the roster"
     },
     "Change Photo" : {
       "comment" : "Button that opens the photo picker",
@@ -316,6 +322,9 @@
         }
       }
     },
+    "Is this the person in front of you?" : {
+      "comment" : "Asks the supervisor to check the photo against the driver"
+    },
     "Items" : {
       "comment" : "Home tab title",
       "extractionState" : "manual",
@@ -394,8 +403,14 @@
     "No internet connection" : {
       "comment" : "Banner shown while the device is offline"
     },
+    "Not cleared to test" : {
+      "comment" : "Shown when a scanned card may not be tested"
+    },
     "Not found" : {
 
+    },
+    "Not this person" : {
+      "comment" : "Rejects a scanned card as the wrong driver"
     },
     "OK" : {
       "comment" : "Alert dismiss button",
@@ -510,6 +525,9 @@
           }
         }
       }
+    },
+    "See your supervisor." : {
+      "comment" : "What a driver should do after a refused card"
     },
     "Select" : {
       "comment" : "Placeholder for a date field\nPlaceholder for a picker field"
@@ -828,6 +846,9 @@
           }
         }
       }
+    },
+    "Yes, start test" : {
+      "comment" : "Confirms identity and begins the breath test"
     },
     "You appear to be offline. Check your connection and try again." : {
       "comment" : "Error shown when the device has no network connection",

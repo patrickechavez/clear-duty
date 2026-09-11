@@ -132,7 +132,11 @@ struct KioskIdleView: View {
 private func previewViewModel(
     analyzer: SimulatedBreathAnalyzer = SimulatedBreathAnalyzer()
 ) -> KioskViewModel {
-    KioskViewModel(terminalName: "Cubao terminal", analyzer: analyzer)
+    KioskViewModel(
+        terminalName: "Cubao terminal",
+        analyzer: analyzer,
+        employees: MockEmployeeRepository()
+    )
 }
 
 #Preview("Scanning") {
