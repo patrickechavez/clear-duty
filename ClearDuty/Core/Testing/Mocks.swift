@@ -29,6 +29,67 @@ enum SampleData {
     )
 }
 
+extension SampleData {
+
+    static let driver = Employee(
+        id: UUID(uuidString: "00000000-0000-0000-0000-0000000000d1")!,
+        employeeNo: "D-1042",
+        firstName: "Ronnie",
+        lastName: "Dela Cruz",
+        role: .driver,
+        status: .active,
+        photoPath: nil
+    )
+
+    static let suspendedDriver = Employee(
+        id: UUID(uuidString: "00000000-0000-0000-0000-0000000000d2")!,
+        employeeNo: "D-1131",
+        firstName: "Benjie",
+        lastName: "Torres",
+        role: .driver,
+        status: .suspended,
+        photoPath: nil
+    )
+
+    static let supervisor = Employee(
+        id: UUID(uuidString: "00000000-0000-0000-0000-00000000005a")!,
+        employeeNo: "S-014",
+        firstName: "Ben",
+        lastName: "Hernandez",
+        role: .supervisor,
+        status: .active,
+        photoPath: nil
+    )
+}
+
+// Looks up cards from an in-memory roster.
+final class MockEmployeeRepository: EmployeeRepository, @unchecked Sendable {
+
+    var roster: [String: Employee] = [
+        "CARD-4F2A91": SampleData.driver,
+        "CARD-0FA983": SampleData.suspendedDriver,
+        "CARD-S014": SampleData.supervisor
+    ]
+
+    var error: Error?
+
+    var delay: Duration = .zero
+
+    private(set) var lookups: [String] = []
+
+    func driver(withCard code: String) async throws -> Employee {
+        lookups.append(code)
+
+        if delay > .zero { try await Task.sleep(for: delay) }
+        if let error { throw error }
+
+        guard let employee = roster[code] else { throw CardLookupFailure.unknownCard }
+        guard employee.role == .driver else { throw CardLookupFailure.notADriver }
+        guard employee.status == .active else { throw CardLookupFailure.suspended }
+        return employee
+    }
+}
+
 final class MockAuthRepository: AuthRepository, @unchecked Sendable {
 
     var loginResult: Result<AuthTokens, APIError> = .success(SampleData.tokens)
