@@ -19,6 +19,22 @@ struct PresenceReading: Equatable, Sendable {
     }
 }
 
+// Works out whether somebody is there from when a face was last seen.
+struct PresenceClock: Sendable {
+
+    // A face not seen for this long counts as gone.
+    static let grace: TimeInterval = 0.5
+
+    var lastFaceAt: Date?
+
+    func reading(at date: Date = .now) -> PresenceReading {
+        guard let lastFaceAt, date.timeIntervalSince(lastFaceAt) < Self.grace else {
+            return PresenceReading(isPresent: false, seenAt: date)
+        }
+        return PresenceReading(isPresent: true, seenAt: date)
+    }
+}
+
 // Reports whether a person is in front of the camera.
 protocol PresenceDetector: Sendable {
 
@@ -30,8 +46,8 @@ protocol PresenceDetector: Sendable {
 @MainActor
 final class PresenceMonitor {
 
-    // Shorter gaps are the detector blinking rather than the driver leaving.
-    nonisolated static let tolerance: Duration = .seconds(2)
+    // Shorter gaps are the analyser covering the face, not the driver leaving.
+    nonisolated static let tolerance: Duration = .seconds(3)
 
     private(set) var isPresent = true
 
@@ -64,8 +80,7 @@ final class PresenceMonitor {
         stopWaiting(arrived: true)
     }
 
-    // Suspends until the driver is in frame, and gives up after the limit so a
-    // confirmed driver who never steps in does not hold the kiosk.
+    // Suspends until the driver is in frame, or gives up after the limit.
     func waitForArrival(within limit: Duration) async -> Bool {
         if hasArrived { return true }
         if detectorStopped { return false }

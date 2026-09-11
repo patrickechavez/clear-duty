@@ -141,6 +141,7 @@ final class AppDependencies {
             terminalName: "Cubao terminal",
             analyzer: SimulatedBreathAnalyzer(),
             employees: employees,
+            presenceDetector: camera,
             photos: camera,
             camera: camera
         )

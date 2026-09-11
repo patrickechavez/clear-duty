@@ -34,7 +34,7 @@ struct PresenceMonitorTests {
         let monitor = PresenceMonitor()
 
         monitor.update(isPresent: false, at: start)
-        monitor.update(isPresent: false, at: start.addingTimeInterval(2))
+        monitor.update(isPresent: false, at: start.addingTimeInterval(3))
 
         #expect(monitor.wasLost)
     }
@@ -44,8 +44,8 @@ struct PresenceMonitorTests {
         let monitor = PresenceMonitor()
 
         monitor.update(isPresent: false, at: start)
-        monitor.update(isPresent: false, at: start.addingTimeInterval(3))
-        monitor.update(isPresent: true, at: start.addingTimeInterval(4))
+        monitor.update(isPresent: false, at: start.addingTimeInterval(4))
+        monitor.update(isPresent: true, at: start.addingTimeInterval(5))
 
         #expect(monitor.wasLost)
         #expect(monitor.isPresent)
@@ -92,6 +92,29 @@ struct PresenceMonitorTests {
         monitor.detectorFinished()
 
         #expect(await !arrived)
+    }
+
+    @Test func readsAsPresentRightAfterAFace() {
+        let clock = PresenceClock(lastFaceAt: start)
+
+        #expect(clock.reading(at: start.addingTimeInterval(0.2)).isPresent)
+    }
+
+    // Silence from the camera means the face is gone, not that it is still there.
+    @Test func readsAsAbsentOnceTheFaceGoesQuiet() {
+        let clock = PresenceClock(lastFaceAt: start)
+
+        #expect(!clock.reading(at: start.addingTimeInterval(1)).isPresent)
+    }
+
+    @Test func readsAsAbsentBeforeAnyFace() {
+        #expect(!PresenceClock().reading(at: start).isPresent)
+    }
+
+    @Test func stampsTheReadingWithTheTimeItWasTaken() {
+        let taken = start.addingTimeInterval(2)
+
+        #expect(PresenceClock(lastFaceAt: start).reading(at: taken).seenAt == taken)
     }
 
     @Test func clearsOnReset() {

@@ -7,8 +7,8 @@
 import AVFoundation
 import os
 
-// The one camera the kiosk uses: card scanning and the blow photo.
-final class KioskCamera: NSObject, PhotoCapture, @unchecked Sendable {
+// The one camera the kiosk uses: card scanning, presence and the blow photo.
+final class KioskCamera: NSObject, PresenceDetector, PhotoCapture, @unchecked Sendable {
 
     let session = AVCaptureSession()
 
@@ -20,7 +20,12 @@ final class KioskCamera: NSObject, PhotoCapture, @unchecked Sendable {
     // A camera that never answers must not hold the blow screen open.
     private static let captureTimeout: TimeInterval = 3
 
+    // How often presence is reported while an attempt is running.
+    private static let presenceInterval: Duration = .milliseconds(250)
+
     private let sessionQueue = DispatchQueue(label: "com.echavez.ClearDuty.camera")
+
+    private let metadataQueue = DispatchQueue(label: "com.echavez.ClearDuty.camera.metadata")
 
     private let photoOutput = AVCapturePhotoOutput()
 
@@ -34,6 +39,7 @@ final class KioskCamera: NSObject, PhotoCapture, @unchecked Sendable {
         var photos: [Int64: CheckedContinuation<Data, any Error>] = [:]
         var lastCode: String?
         var lastCodeAt = Date.distantPast
+        var lastFaceAt: Date?
     }
 
     private var rotation: AVCaptureDevice.RotationCoordinator?
@@ -57,6 +63,25 @@ final class KioskCamera: NSObject, PhotoCapture, @unchecked Sendable {
             guard session.isRunning else { return }
             session.stopRunning()
         }
+    }
+
+    // Reports presence on a clock, since an empty frame is never reported.
+    func presence() -> AsyncStream<PresenceReading> {
+        AsyncStream { continuation in
+            let ticking = Task.detached(priority: .utility) { [weak self] in
+                while !Task.isCancelled {
+                    try? await Task.sleep(for: Self.presenceInterval)
+                    guard let self else { return }
+                    continuation.yield(PresenceClock(lastFaceAt: lastFaceAt()).reading())
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { _ in ticking.cancel() }
+        }
+    }
+
+    private func lastFaceAt() -> Date? {
+        shared.withLock { $0.lastFaceAt }
     }
 
     // Emits each card code the camera reads.
@@ -116,8 +141,11 @@ final class KioskCamera: NSObject, PhotoCapture, @unchecked Sendable {
         guard session.canAddOutput(codeOutput) else { return }
 
         session.addOutput(codeOutput)
-        codeOutput.setMetadataObjectsDelegate(self, queue: .main)
-        codeOutput.metadataObjectTypes = [.qr, .code128]
+        codeOutput.setMetadataObjectsDelegate(self, queue: metadataQueue)
+
+        // Faces come from the same output, so presence costs no extra frames.
+        let wanted: [AVMetadataObject.ObjectType] = [.qr, .code128, .face]
+        codeOutput.metadataObjectTypes = wanted.filter(codeOutput.availableMetadataObjectTypes.contains)
     }
 
     // Keeps the photo upright as the mounted device turns.
@@ -151,9 +179,15 @@ extension KioskCamera: AVCaptureMetadataOutputObjectsDelegate {
         didOutput objects: [AVMetadataObject],
         from connection: AVCaptureConnection
     ) {
-        guard let code = (objects.first as? AVMetadataMachineReadableCodeObject)?.stringValue else { return }
-
         let now = Date.now
+        if objects.contains(where: { $0 is AVMetadataFaceObject }) {
+            shared.withLock { $0.lastFaceAt = now }
+        }
+
+        guard let code = objects.lazy
+            .compactMap({ $0 as? AVMetadataMachineReadableCodeObject })
+            .first?.stringValue else { return }
+
         let isNew = shared.withLock { state in
             let isRepeat = state.lastCode == code && now.timeIntervalSince(state.lastCodeAt) < Self.rescanDelay
             state.lastCode = code
