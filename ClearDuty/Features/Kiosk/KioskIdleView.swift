@@ -36,8 +36,21 @@ struct KioskIdleView: View {
         }
     }
 
-    // Preview sits at the top, next to the camera.
+    @ViewBuilder
     private var scanning: some View {
+        #if DEVELOPMENT
+        if AppEnvironment.isDemo {
+            demoScanner
+        } else {
+            cameraScanner
+        }
+        #else
+        cameraScanner
+        #endif
+    }
+
+    // Preview sits at the top, next to the camera.
+    private var cameraScanner: some View {
         VStack(spacing: Theme.Spacing.xxl) {
             CameraPreview(camera: viewModel.camera)
                 .frame(width: 320, height: 200)
@@ -59,6 +72,50 @@ struct KioskIdleView: View {
             .multilineTextAlignment(.center)
         }
     }
+
+    #if DEVELOPMENT
+
+    // A card the demo can scan without a camera.
+    private struct DemoCard {
+        let name: String
+        let code: String
+
+        static let all = [
+            DemoCard(name: "Active driver", code: "CARD-4F2A91"),
+            DemoCard(name: "Suspended driver", code: "CARD-0FA983"),
+            DemoCard(name: "Staff card", code: "CARD-S014"),
+            DemoCard(name: "Unknown card", code: "CARD-NOTREAL")
+        ]
+    }
+
+    // The simulator has no camera, so cards are handed over by hand.
+    private var demoScanner: some View {
+        VStack(spacing: Theme.Spacing.xl) {
+            VStack(spacing: Theme.Spacing.sm) {
+                Text(verbatim: "Pick a card to scan")
+                    .font(Theme.Font.sectionTitle)
+
+                Text(verbatim: "The simulator has no camera, so the reader is stood in for")
+                    .font(Theme.Font.secondary)
+                    .foregroundStyle(Theme.Color.secondaryText)
+            }
+            .multilineTextAlignment(.center)
+
+            VStack(spacing: Theme.Spacing.md) {
+                ForEach(DemoCard.all, id: \.code) { card in
+                    Button {
+                        Task { await viewModel.cardWasRead(card.code) }
+                    } label: {
+                        Text(verbatim: card.name)
+                            .frame(maxWidth: 320, minHeight: Theme.Size.minimumTapTarget)
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
+        }
+    }
+
+    #endif
 
     private func faulted(_ fault: KioskViewModel.Fault) -> some View {
         VStack(spacing: Theme.Spacing.md) {

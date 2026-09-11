@@ -49,12 +49,33 @@ struct LoginView: View {
                     action: { await viewModel.signIn() }
                 )
                 .disabled(!viewModel.canSubmit)
+
+                #if DEVELOPMENT
+                if AppEnvironment.isDemo { demoSignIn }
+                #endif
             }
             .padding(Theme.Spacing.lg)
         }
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle(Text("Welcome", comment: "Title of the sign-in screen"))
     }
+
+    #if DEVELOPMENT
+
+    // The demo runs on mock data, so any credentials do.
+    private var demoSignIn: some View {
+        Button {
+            viewModel.email = "supervisor@example.com"
+            viewModel.password = "demo-password"
+            submit()
+        } label: {
+            Text("Continue as demo supervisor", comment: "Signs in to the demo without credentials")
+                .frame(maxWidth: .infinity, minHeight: Theme.Size.minimumTapTarget)
+        }
+        .buttonStyle(.bordered)
+    }
+
+    #endif
 
     private func submit() {
         focusedField = nil
