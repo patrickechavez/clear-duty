@@ -1,8 +1,27 @@
 # ClearDuty
 
-A production-ready SwiftUI app template. MVVM + Repository, Swift 6 strict concurrency, a complete auth lifecycle, and one third-party dependency — Firebase, kept behind protocol seams so the rest of the app never touches it.
+An alcohol testing kiosk for public utility vehicle drivers, run on an iPad
+mounted at the depot. A driver holds their ID up to the camera, a supervisor
+confirms the face matches, the driver blows, and the terminal says whether they
+are cleared to drive.
 
-- iOS 17+ · Swift 6 · Xcode 26
+- iOS 17+ · Swift 6 · Xcode 26 · SwiftUI · Supabase
+
+**Working today.** Card scanning, the employee lookup, the supervised confirm
+step, the blow reported stage by stage, face presence gating the start, a photo
+taken mid-blow as evidence, and every refusal and cancellation path.
+
+**Simulated.** The breath analyser. No vendor SDK is linked and no device was
+bought, so `SimulatedBreathAnalyzer` stands behind the same protocol a real one
+would. See [Breath analyser](#breath-analyser) for how one would attach.
+
+**Not built.** Persistence. Nothing is written down yet, so the tally on the
+idle screen stays at zero and the evidence photo lives only as long as the
+result is on screen.
+
+The networking, auth, navigation and observability layers come from a SwiftUI
+template I maintain, which is why there is more infrastructure here than a
+kiosk of this size needs.
 
 ## Try it
 
@@ -30,61 +49,33 @@ Those run on the iPad.
 
 Everything demo-only is compiled out of Staging and Production.
 
-## Getting started
+## Running it against Supabase
 
-Clone, rename, and you have a running app in under ten minutes.
+The demo above needs none of this. Follow it only if you want the real thing:
+live data, a real camera and a real card.
 
-### 1. Clone and rename
+**1. A Supabase project.** You need an `employees` table with at least
+`card_code`, `employee_no`, `first_name`, `last_name`, `role` and `status`, and
+an auth user for the supervisor who signs in. The schema is not in this repo.
 
-Three commands. Substitute your own values.
+**2. Point the app at it.** In `Config/Development.xcconfig`, set
+`API_BASE_URL` to your project URL. The double slash is escaped as `/$()/`
+because `//` starts a comment in an xcconfig.
 
-```bash
-git clone <this-repo> MyApp
-cd MyApp
-Scripts/rename.sh MyApp com.acmecorp "My App"
-```
+**3. Add the key.** Copy `Config/Secrets.example.xcconfig` to
+`Config/Secrets.xcconfig` and fill in `DEV_SUPABASE_ANON_KEY`. That file is
+gitignored. Use the anon or publishable key only. The `service_role` key must
+never reach a client, since it bypasses every row level security policy you
+wrote.
 
-The three arguments to the script:
+**4. Run on an iPad.** The Development scheme, on hardware. A simulator has no
+camera, so it cannot scan a card, find a face or take the photo.
 
-| | | |
-|---|---|---|
-| `MyApp` | required | The app name. Becomes the target, the source folder, and a Swift type, so it takes letters and digits only, starting with a letter — no spaces or hyphens. |
-| `com.acmecorp` | required | Your bundle prefix. Lowercase reverse-DNS, at least two components. |
-| `"My App"` | optional | The home screen name, quoted because it can contain spaces. Leave it off when it matches the app name — `Scripts/rename.sh Runly com.acmecorp` gives an app called Runly. |
+**5. Make some cards.** Any QR code or Code 128 barcode whose contents match a
+`card_code` value. Print them, or hold a second screen up to the camera.
 
-This renames the project, target, schemes, source folder, app entry point, and every file header, and rewrites the bundle IDs, display names, and deep link scheme. It needs a clean working tree, so `git checkout . && git clean -fd` undoes any run.
-
-### 2. Start your own history
-
-```bash
-rm -rf .git && git init && git add -A && git commit -m "Initial commit"
-```
-
-### 3. Finish the setup
-
-The app builds and runs as-is. Three things the script can't do for you.
-
-- **Your API** — set `API_BASE_URL` in each of the three `Config/*.xcconfig`
-- **App icon and colours** — all ship empty. See [Branding](#branding)
-- **Firebase** — *optional*. Without a `GoogleService-Info.plist` the app builds fine and analytics and crash reporting are off. See [Firebase](#firebase) to turn it on, or to remove it.
-
-```bash
-xcodebuild -scheme Development -destination 'platform=iOS Simulator,name=iPhone 16' build
-```
-
-## Removing the sample
-
-`Item` is a worked example, not something to build on. Keep it while you write your first real feature — it's the only place pagination, `LoadState`, and the repository pattern are shown working end to end — then delete it.
-
-```
-Features/Dashboard/HomeView/          the list screen
-Features/Dashboard/ItemDetailView/    the detail screen
-Data/ItemRepository.swift
-Models/Models.swift                   the Item and ItemDraft types
-Core/Testing/Mocks.swift              SampleData.items and MockItemRepository
-```
-
-Then remove `makeHomeViewModel`, `makeItemDetailViewModel` (both overloads), and the `items` property from `AppDependencies`, and drop `.itemDetail` from `HomeRoute`. The compiler finds anything you miss.
+Sign in as staff. Drivers have no login and are not meant to have one: they are
+identified by the card and the supervisor standing next to them.
 
 ## What's inside
 
@@ -95,7 +86,7 @@ Then remove `makeHomeViewModel`, `makeItemDetailViewModel` (both overloads), and
 - **Images** — bounded two-tier cache with LRU eviction and in-flight de-duplication
 - **Connectivity** — `NWPathMonitor` behind an offline banner, so a failing screen reads as a connection problem
 - **Observability** — analytics and crash reporting behind protocols, with Firebase adapters; non-fatals recorded with no per-feature wiring
-- **Build** — three environments, privacy manifest, one-command rename
+- **Build** — three environments, privacy manifest, a demo scheme that runs on mock data
 
 The service gates are driven by HTTP status, not by a version endpoint. A `426` blocks the app behind "Update Required" and a `503` behind "Back Soon", both routed through `SessionEventBus`. `APIConfig.isForceUpdateEnabled` and the `VersionCheck` model belong to a client-side version-comparison approach that isn't built — delete them, or wire them to a version endpoint if you prefer that shape.
 
@@ -420,6 +411,5 @@ Everything else works without one, which is why push stays scaffolded rather tha
 
 - Real API URLs in all three xcconfigs
 - All three `GoogleService-Info.plist` files in place
-- The `Item` sample removed
 - Review `PrivacyInfo.xcprivacy` against what your backend stores
 - App icon and accent color
