@@ -185,6 +185,105 @@ A `PrivacyShieldView` covers the UI whenever the app is not active, so the task-
 
 `DebuggerDetector` reads the `P_TRACED` process flag via `sysctl` and reports an attached debugger. Deliberately no `ptrace(PT_DENY_ATTACH)` — that reads as anti-tampering to App Review and can get a submission rejected. Obfuscation beyond the existing Release symbol-stripping is intentionally not attempted.
 
+## Breath analyser
+
+The kiosk reads blood alcohol through a protocol, so nothing outside
+`Core/Hardware` knows what hardware exists:
+
+```swift
+protocol BreathAnalyzer: Sendable {
+    var serial: String { get }
+    var calibrationExpiresOn: Date { get }
+    var isConnected: Bool { get }
+    func measure() -> AsyncThrowingStream<BlowStage, any Error>
+}
+```
+
+A reading arrives as a stream of stages, warming up, ready to blow, blowing,
+analysing, complete, because the kiosk has to tell the driver what to do at
+each one.
+
+`SimulatedBreathAnalyzer` is the only implementation. It walks those stages
+with whatever reading it is configured with, and throws for the three cases the
+kiosk has to handle: a disconnected device, lapsed calibration and a blow that
+stops early.
+
+**No vendor SDK is linked.** That is deliberate rather than unfinished.
+
+An integration that has never run against hardware is unverified code that
+looks finished, vendor SDKs are usually keyed to a developer account and
+restricted in how they may be redistributed, and neither belongs in a public
+repository. Keeping the seam empty also means every screen is buildable and
+testable with no device, which is the point of having the protocol.
+
+### How a real device would attach
+
+BACtrack publishes an iOS SDK that reports connection state and readings
+through delegate callbacks rather than async calls. A `BluetoothBreathAnalyzer`
+would own the SDK object and bridge it:
+
+```swift
+final class BluetoothBreathAnalyzer: NSObject, BreathAnalyzer {
+
+    func measure() -> AsyncThrowingStream<BlowStage, any Error> {
+        AsyncThrowingStream { continuation in
+            self.stages = continuation
+            api.startCollection()
+        }
+    }
+
+    // Delegate callbacks, one per stage the SDK reports.
+    func bacTrackCountdown(_ seconds: Int32) {
+        stages?.yield(.warmingUp(secondsRemaining: Int(seconds)))
+    }
+
+    func bacTrackBreathResult(_ value: Float) {
+        stages?.yield(.complete(Double(value)))
+        stages?.finish()
+    }
+}
+```
+
+`isConnected` maps to the SDK's connection state, `serial` to the device serial
+it reports on connect, and `calibrationExpiresOn` comes from the `devices` row
+rather than the device, since calibration is tracked by the operator.
+
+Two things the protocol does not cover yet and would need adding with the real
+implementation: battery level, which BLE exposes through the standard Battery
+Service, and discovery, so a supervisor can pair a replacement unit on site.
+
+Everything above is from the published documentation. It has not been built or
+run, because there is no device to run it against.
+
+## Camera
+
+One `AVCaptureSession` serves the whole kiosk flow, owned by `KioskCamera`:
+
+- **Card scanning.** An `AVCaptureMetadataOutput` reading QR and Code 128,
+  reported as an `AsyncStream<String>`. The same code is ignored for five
+  seconds so one card held up does not scan repeatedly.
+- **Presence.** An `AVCaptureVideoDataOutput` running Vision face detection
+  four times a second, reported as an `AsyncStream<PresenceReading>`.
+- **The photo.** An `AVCapturePhotoOutput` fired once, mid-blow.
+
+Both are behind protocols, `PresenceDetector` and `PhotoCapture`, so the view
+model is tested with simulated versions and never touches AVFoundation.
+
+### Why presence matters
+
+The blow does not start until a face is in frame, so the photo always has a
+subject. If the driver walks away for longer than `PresenceMonitor.tolerance`
+before the sample is captured, the test is stopped and recorded as invalid
+rather than thrown away, which is what makes repeated abandonment visible. Once
+the analyser reaches `analysing` the sample already exists, so leaving no longer
+invalidates it.
+
+A confirmed driver who never steps in front of the camera is not left on screen
+forever: the wait gives up after twenty seconds and records the attempt.
+
+The photo is held in memory with the outcome. Storing it is part of the
+persistence work that is not built yet.
+
 ## Firebase
 
 Analytics and Crashlytics via SPM, behind protocols — only `FirebaseObservability.swift` imports Firebase.
