@@ -56,8 +56,9 @@ The cards are the same four as above:
 [staff](.github/assets/card-staff.png),
 [unknown](.github/assets/card-unknown.png).
 
-Hold it about an arm's length from the screen. Once a driver is confirmed, step
-into frame: the blow will not start until the camera sees a face.
+Hold the QR side towards the screen, about 20 cm away. Once a driver is
+confirmed, step into frame: the blow will not start until the camera sees a
+face.
 
 ## How a test runs
 
@@ -100,6 +101,15 @@ protocol BreathAnalyzer: Sendable {
 A reading arrives as a stream of stages rather than one number, because the
 kiosk has to tell the driver what to do at each one. A real device would bridge
 its delegate callbacks into the same stream.
+
+Their SDK reports the serial, the battery level, and `BacTrackUseCount`, how
+many tests the unit has taken. It reports nothing about calibration, which is
+why `serial` comes from the device while `calibrationExpiresOn` comes from the
+operator's records. Calibration is due every twelve months or after so many
+tests, whichever lands first, so a real terminal would warn on the count the
+device reports and on a date it was told. Servicing means posting the unit away
+for ten to fourteen business days, so a depot that blocks shifts on a failed
+test needs two analysers, not one.
 
 ### A test with nobody in front of the camera is not evidence
 
