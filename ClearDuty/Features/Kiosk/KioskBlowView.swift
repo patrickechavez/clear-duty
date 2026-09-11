@@ -58,7 +58,7 @@ struct KioskBlowView: View {
                 .font(Theme.Font.sectionTitle)
                 .foregroundStyle(Theme.Color.secondaryText)
 
-            // The still is taken during the blow, so the screen says so as it happens.
+            // Says so while the still is being taken.
             Label {
                 Text("Photo being taken", comment: "Shown while the kiosk captures a photo during the blow")
             } icon: {

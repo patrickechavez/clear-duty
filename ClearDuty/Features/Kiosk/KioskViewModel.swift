@@ -67,8 +67,7 @@ final class KioskViewModel {
         init(_ failure: CardLookupFailure) {
             switch failure {
             case .unknownCard: self = .unrecognised
-            // A suspended driver and a staff card read the same on screen, so a
-            // mounted terminal does not announce why someone was refused.
+            // A mounted terminal does not announce why someone was refused.
             case .suspended, .notADriver: self = .notCleared
             }
         }
@@ -80,8 +79,7 @@ final class KioskViewModel {
         case calibrationExpired
     }
 
-    // Zero tolerance for public utility drivers. Belongs on a policy record
-    // once one exists, and is snapshotted onto every test either way.
+    // Zero tolerance for public utility drivers, snapshotted onto every test.
     static let threshold: Double = 0
 
     let terminalName: String
@@ -129,8 +127,7 @@ final class KioskViewModel {
         self.camera = camera
     }
 
-    // Resolves a scanned code to a driver, or to why it was refused. A faulted
-    // terminal ignores cards, since it cannot produce a valid test.
+    // Resolves a scanned code to a driver, unless the terminal cannot test.
     func cardWasRead(_ code: String) async {
         guard phase == .idle, state() == .scanning else { return }
         phase = .looking
@@ -148,8 +145,7 @@ final class KioskViewModel {
         phase = .idle
     }
 
-    // The supervisor confirmed the face matches, so take the reading once the
-    // driver is actually in front of the camera.
+    // Takes the reading once the driver is actually in front of the camera.
     func identityConfirmed() async {
         guard case let .confirming(driver) = phase else { return }
         presence.reset()
