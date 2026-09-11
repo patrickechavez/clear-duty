@@ -22,4 +22,14 @@ struct AppEnvironmentTests {
     @Test func showsNoLabelInProduction() {
         #expect(AppEnvironment.production.label == nil)
     }
+
+    // Only the Demo scheme passes the flag, so a plain run stays on live data.
+    @Test func runsOnLiveDataWithoutTheDemoFlag() {
+        #expect(!AppEnvironment.runsOnMockData(arguments: ["ClearDuty", "-other"]))
+        #expect(!AppEnvironment.isDemo)
+    }
+
+    @Test func runsOnMockDataWithTheDemoFlag() {
+        #expect(AppEnvironment.runsOnMockData(arguments: ["ClearDuty", AppEnvironment.demoFlag]))
+    }
 }

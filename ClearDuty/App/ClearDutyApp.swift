@@ -49,7 +49,7 @@ struct ClearDutyApp: App {
     @State private var isShielded = false
 
     init() {
-        let dependencies = AppDependencies.live()
+        let dependencies = AppDependencies.forLaunch()
         _dependencies = State(wrappedValue: dependencies)
         _navigator = State(
             wrappedValue: AppNavigator(parser: dependencies.deepLinks)

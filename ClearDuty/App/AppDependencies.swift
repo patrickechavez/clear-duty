@@ -48,6 +48,14 @@ final class AppDependencies {
         self.network = network
     }
 
+    // Mock dependencies under the Demo scheme, live ones otherwise.
+    static func forLaunch() -> AppDependencies {
+        #if DEVELOPMENT
+        if AppEnvironment.isDemo { return demo() }
+        #endif
+        return live()
+    }
+
     static func live(tokenStore: any TokenStore = KeychainTokenStore()) -> AppDependencies {
         // No plist, or no Firebase at all, so the no-op adapters take over.
         let (analytics, crashes) = FirebaseBootstrap.start()
@@ -114,6 +122,28 @@ final class AppDependencies {
         )
     }
 
+    #if DEVELOPMENT
+
+    // Mock data only: no network, no keychain, no Firebase, no camera.
+    static func demo() -> AppDependencies {
+        let tokenStore = InMemoryTokenStore()
+        let users = MockUserRepository()
+
+        return AppDependencies(
+            session: SessionManager(tokenStore: tokenStore, users: users),
+            auth: MockAuthRepository(),
+            users: users,
+            employees: MockEmployeeRepository(),
+            imageLoader: MockImageLoader(),
+            tokenStore: tokenStore,
+            deepLinks: DeepLinkParser(),
+            analytics: NoopAnalyticsTracker(),
+            crashes: NoopCrashReporter()
+        )
+    }
+
+    #endif
+
     private static func urlSession() -> URLSession {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = APIConfig.timeout
@@ -137,7 +167,18 @@ final class AppDependencies {
 
     // The simulator stands in until a CoreBluetooth analyser exists.
     func makeKioskViewModel() -> KioskViewModel {
-        KioskViewModel(
+        #if DEVELOPMENT
+        // The demo has no camera, so presence and the photo are simulated too.
+        if AppEnvironment.isDemo {
+            return KioskViewModel(
+                terminalName: "Cubao terminal",
+                analyzer: SimulatedBreathAnalyzer(),
+                employees: employees
+            )
+        }
+        #endif
+
+        return KioskViewModel(
             terminalName: "Cubao terminal",
             analyzer: SimulatedBreathAnalyzer(),
             employees: employees,
