@@ -56,7 +56,11 @@ struct SimulatedBreathAnalyzer: BreathAnalyzer {
 
     var warmUpSeconds = 3
 
-    var stageDuration: Duration = .seconds(1)
+    // A countdown ticks once a second, whatever the instructions take.
+    var warmUpTick: Duration = .seconds(1)
+
+    // Long enough to read an instruction before it is replaced.
+    var stageDuration: Duration = .seconds(3)
 
     // Fails partway through, to exercise an interrupted blow.
     var failsAfter: BlowStage?
@@ -69,7 +73,11 @@ struct SimulatedBreathAnalyzer: BreathAnalyzer {
                     guard isCalibrated() else { throw BreathAnalyzerError.calibrationExpired }
 
                     for remaining in stride(from: warmUpSeconds, to: 0, by: -1) {
-                        try await emit(.warmingUp(secondsRemaining: remaining), to: continuation)
+                        try await emit(
+                            .warmingUp(secondsRemaining: remaining),
+                            to: continuation,
+                            lasting: warmUpTick
+                        )
                     }
                     try await emit(.readyToBlow, to: continuation)
                     try await emit(.blowing, to: continuation)
@@ -86,10 +94,13 @@ struct SimulatedBreathAnalyzer: BreathAnalyzer {
 
     private func emit(
         _ stage: BlowStage,
-        to continuation: AsyncThrowingStream<BlowStage, any Error>.Continuation
+        to continuation: AsyncThrowingStream<BlowStage, any Error>.Continuation,
+        lasting duration: Duration? = nil
     ) async throws {
         if stage == failsAfter { throw BreathAnalyzerError.insufficientSample }
         continuation.yield(stage)
-        if stageDuration > .zero { try await Task.sleep(for: stageDuration) }
+
+        let holding = duration ?? stageDuration
+        if holding > .zero { try await Task.sleep(for: holding) }
     }
 }

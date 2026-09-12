@@ -328,7 +328,7 @@ struct SimulatedBreathAnalyzerTests {
     }
 
     @Test func reportsEveryStageInOrder() async throws {
-        let analyzer = SimulatedBreathAnalyzer(reading: 0.04, warmUpSeconds: 1, stageDuration: .zero)
+        let analyzer = SimulatedBreathAnalyzer(reading: 0.04, warmUpSeconds: 1, warmUpTick: .zero, stageDuration: .zero)
 
         #expect(try await stages(analyzer) == [
             .warmingUp(secondsRemaining: 1),
@@ -340,7 +340,7 @@ struct SimulatedBreathAnalyzerTests {
     }
 
     @Test func countsTheWarmUpDown() async throws {
-        let analyzer = SimulatedBreathAnalyzer(warmUpSeconds: 3, stageDuration: .zero)
+        let analyzer = SimulatedBreathAnalyzer(warmUpSeconds: 3, warmUpTick: .zero, stageDuration: .zero)
 
         let warmUp = try await stages(analyzer).prefix(3)
 
