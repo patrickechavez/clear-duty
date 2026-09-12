@@ -76,6 +76,19 @@ face.
 A card that is unknown, suspended or staff never reaches step 4. A driver who
 walks away before the sample is captured stops the test at step 6.
 
+### The same journey on screen
+
+| | |
+|---|---|
+| <img src="docs/screenshots/idle.png" alt="The idle screen, showing the camera and asking for an ID"> | <img src="docs/screenshots/confirm.png" alt="The confirm screen, asking the supervisor whether this is the person in front of them"> |
+| **1 to 3. Idle and scan.** The camera reads the card and the terminal resolves it to a driver. | **4. Confirm.** The supervisor checks the face and taps through. The tally and the analyser serial sit on the idle screen footer. |
+| <img src="docs/screenshots/presence.png" alt="The screen asking the driver to step in front of the camera"> | <img src="docs/screenshots/blow-now.png" alt="The screen telling the driver to blow now"> |
+| **5. Presence.** Nothing is asked of the analyser until a face is in frame. | **6. Blow.** The countdown finishes and the instruction changes. |
+| <img src="docs/screenshots/keep-blowing.png" alt="The screen telling the driver to keep blowing, with a note that a photo is being taken"> | <img src="docs/screenshots/analysing.png" alt="The analysing screen, telling the driver they can stop"> |
+| **7. Photo.** Taken mid-blow, and the screen says so rather than doing it quietly. | **Analysing.** The sample is captured, so walking away can no longer invalidate it. |
+| <img src="docs/screenshots/cleared.png" alt="The result screen, showing 0.00 percent BAC and cleared for duty"> | |
+| **8. Verdict.** The reading, the verdict, and six seconds before the terminal resets. | |
+
 ## Decisions worth explaining
 
 ### No vendor SDK is linked
